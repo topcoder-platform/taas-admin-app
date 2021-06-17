@@ -1,0 +1,21 @@
+.container {
+  svg {
+    display: block;
+    width: auto;
+    height: 100%;
+
+    path,
+    line {
+      stroke: #7f7f7f;
+    }
+  }
+
+  &.isActive {
+    svg {
+      path,
+      line {
+        stroke: #06d6a0;
+      }
+    }
+  }
+}

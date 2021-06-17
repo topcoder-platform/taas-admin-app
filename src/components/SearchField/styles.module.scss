@@ -1,0 +1,45 @@
+@import "styles/variables";
+@import "styles/mixins";
+
+.container {
+  display: flex;
+  align-items: center;
+  border: 1px solid $control-border-color;
+  border-radius: 6px;
+  background-color: #fff;
+
+  &.medium {
+    height: $control-height-medium;
+  }
+
+  &.small {
+    height: $control-height-small;
+  }
+}
+
+.icon {
+  margin: auto 10px;
+  width: 16px;
+  height: 16px;
+  background-size: 16px 16px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url("./../../assets/images/icon-magnifier.svg");
+}
+
+input.input {
+  flex: 1 1 0;
+  margin: 0;
+  border: none !important;
+  padding: 8px 16px 8px 0;
+  height: 22px;
+  line-height: 22px;
+  background: none;
+  outline: none !important;
+  box-shadow: none !important;
+
+  &::placeholder {
+    text-transform: none;
+    color: #aaa;
+  }
+}

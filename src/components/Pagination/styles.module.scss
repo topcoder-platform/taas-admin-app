@@ -1,0 +1,77 @@
+@import "styles/mixins";
+@import "styles/variables";
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.label {
+  margin-right: 5px;
+  font-size: 12px;
+  line-height: 22px;
+}
+
+.pageSize {
+  flex: 0 0 auto;
+  width: 135px;
+}
+
+.pageButtons {
+  position: relative;
+  display: flex;
+  margin-left: 20px;
+
+  @include desktop {
+    margin-left: 40px;
+  }
+}
+
+.pageButton {
+  flex: 0 0 auto;
+  margin-left: 10px;
+
+  &:first-child {
+    margin-left: 0;
+  }
+}
+
+.buttonPrev {
+  flex: 0 0 auto;
+  // position: absolute;
+  // top: auto;
+  // right: 100%;
+}
+
+.buttonNext {
+  flex: 0 0 auto;
+  margin-left: 10px;
+}
+
+.buttonLabel {
+  display: none;
+
+  @include desktop {
+    display: inline-block;
+  }
+}
+
+.iconArrowLeft,
+.iconArrowRight {
+  display: inline-block;
+  width: 7px;
+  height: 12px;
+}
+
+.iconArrowLeft {
+  @include desktop {
+    margin-right: 3px;
+  }
+}
+
+.iconArrowRight {
+  @include desktop {
+    margin-left: 3px;
+  }
+}

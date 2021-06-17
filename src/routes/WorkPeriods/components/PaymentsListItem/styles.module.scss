@@ -1,0 +1,62 @@
+@import "styles/mixins";
+
+.container {
+  display: flex;
+  align-items: center;
+
+  input {
+    display: block;
+    margin: 0;
+    border: none;
+    padding: 0;
+    max-width: 70px;
+    height: 22px;
+    background: #fff;
+    @include roboto-medium;
+    line-height: 22px;
+    outline: none !important;
+    color: #0d61bf;
+  }
+}
+
+.iconLink {
+  flex: 0 0 auto;
+  display: inline-block;
+  margin-right: 5px;
+  width: 16px;
+  height: 16px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url("./../../../../assets/images/icon-link.png");
+}
+
+.iconCopyLink {
+  flex: 0 0 auto;
+  display: inline-block;
+  margin-left: 18px;
+  width: 16px;
+  height: 16px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url("./../../../../assets/images/icon-copy.png");
+  cursor: pointer;
+}
+
+.iconOpenLink {
+  flex: 0 0 auto;
+  display: inline-block;
+  margin-left: 16px;
+  width: 16px;
+  height: 16px;
+  text-decoration: none;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url("./../../../../assets/images/icon-open-outside.png");
+}
+
+.hidden {
+  display: none;
+}

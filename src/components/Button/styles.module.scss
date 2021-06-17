@@ -1,0 +1,106 @@
+@import "styles/mixins";
+@import "styles/variables";
+
+.button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  @include roboto-bold;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  outline: none;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 1;
+    cursor: not-allowed;
+  }
+}
+
+.medium {
+  padding: 0 26px;
+  height: 40px;
+  font-size: 14px;
+  line-height: 22px;
+
+  &.circle {
+    padding: 0;
+    width: 40px;
+  }
+}
+
+.small {
+  padding: 0 15px;
+  height: 30px;
+  font-size: 12px;
+  line-height: 22px;
+
+  &.circle {
+    padding: 0;
+    width: 30px;
+  }
+}
+
+.outlined {
+  border: 1px solid $text-color;
+  background-color: #fff;
+  color: $text-color;
+
+  &.primary {
+    border-color: $primary-color;
+    color: $primary-text-color;
+  }
+
+  &.primary-light {
+    border-color: $primary-light-color;
+    color: $primary-light-text-color;
+  }
+
+  &.primary-dark {
+    border-color: $primary-dark-color;
+    color: $primary-dark-text-color;
+  }
+
+  &:disabled {
+    border-color: $control-disabled-border-color;
+    background-color: $control-disabled-bg-color;
+    color: $control-disabled-text-color;
+  }
+}
+
+.contained {
+  border: 1px solid $text-color;
+  background-color: $text-color;
+  color: #fff;
+
+  &.primary {
+    border-color: $primary-color;
+    background-color: $primary-color;
+  }
+
+  &.primary-light {
+    border-color: $primary-light-color;
+    background-color: $primary-light-color;
+  }
+
+  &.primary-dark {
+    border-color: $primary-dark-color;
+    background-color: $primary-dark-color;
+  }
+
+  &:disabled {
+    border-color: $control-disabled-border-color;
+    background-color: $control-disabled-bg-color;
+    color: $control-disabled-text-color;
+  }
+}
+
+.circle,
+.rounded {
+  border-radius: 999px;
+}
+
+.selected {
+  border-color: $text-color !important;
+  color: $text-color !important;
+}

@@ -1,0 +1,11 @@
+declare module "@topcoder/micro-frontends-navbar-app" {
+  export const disableSidebarForRoute: (route: string) => void;
+  export const getAuthUserProfile: () => Promise<any>;
+  export const getAuthUserTokens: () => Promise<{
+    tokenV2: string;
+    tokenV3: string;
+  }>;
+  export const setAppMenu: (route: string, obj: Record<string, any>) => void;
+  export const login: () => void;
+  export const logout: () => void;
+}

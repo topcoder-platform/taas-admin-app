@@ -1,0 +1,19 @@
+@import "styles/mixins";
+
+.handleSection {
+  margin: 0 0 26px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 42px;
+
+  > .button {
+    margin-left: 10px;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+}

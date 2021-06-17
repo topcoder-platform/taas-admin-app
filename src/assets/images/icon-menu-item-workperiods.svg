@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg
+  version="1.1"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  x="0px"
+  y="0px"
+  viewBox="0 0 20 22"
+  enable-background="new 0 0 20 22"
+  xml:space="preserve"
+>
+  <path
+    fill="none"
+    stroke="#06D6A0"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="M4,3.6111
+	h12.2222c1.2887,0,2.3333,1.0447,2.3333,2.3333v12.2222c0,1.2887-1.0447,2.3333-2.3333,2.3333H4
+	c-1.2887,0-2.3333-1.0447-2.3333-2.3333V5.9444C1.6667,4.6558,2.7113,3.6111,4,3.6111z"
+  />
+  <line
+    fill="none"
+    stroke="#06D6A0"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    x1="14.3333"
+    y1="1.5"
+    x2="14.3333"
+    y2="5.7222"
+  />
+  <line
+    fill="none"
+    stroke="#06D6A0"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    x1="5.8889"
+    y1="1.5"
+    x2="5.8889"
+    y2="5.7222"
+  />
+  <line
+    fill="none"
+    stroke="#06D6A0"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    x1="1.6667"
+    y1="9.9444"
+    x2="18.5556"
+    y2="9.9444"
+  />
+  <line
+    fill="none"
+    stroke="#06D6A0"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    x1="8"
+    y1="15.2222"
+    x2="12.2222"
+    y2="15.2222"
+  />
+</svg>

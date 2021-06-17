@@ -1,0 +1,9 @@
+@import 'styles/mixins';
+
+.pageTitle {
+  margin: 0;
+  font-size: 34px;
+  line-height: 38px;
+  text-transform: uppercase;
+  @include barlow-condensed-medium;
+}

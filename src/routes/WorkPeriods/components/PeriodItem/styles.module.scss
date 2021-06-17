@@ -1,0 +1,100 @@
+@import "styles/mixins";
+@import "styles/variables";
+
+.container {
+  td {
+    padding-left: 17px;
+    padding-right: 17px;
+    background: #fff;
+  }
+
+  &:nth-child(odd) {
+    td {
+      background: #f9f9f9;
+    }
+  }
+
+  &.hasDetails {
+    td {
+      border-top: 1px solid #d6d6d6;
+      background: #fff;
+
+      &.toggle {
+        border-left: 1px solid #d6d6d6;
+        padding-top: 11px;
+        padding-left: 14px;
+      }
+
+      &.daysWorked {
+        border-right: 1px solid #d6d6d6;
+        padding-top: 4px;
+        padding-right: 9px;
+      }
+    }
+  }
+
+  &.isFailed {
+    td {
+      background-color: $period-row-failed-bg-color;
+    }
+  }
+}
+
+td.toggle {
+  padding: 12px 20px 12px 15px;
+  line-height: 15px;
+}
+
+.userHandle {
+  a {
+    @include roboto-bold;
+    color: #0d61bf;
+  }
+  span {
+    display: block;
+    max-width: 20em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+td.teamName {
+  @include roboto-medium;
+  white-space: nowrap;
+}
+
+td.startDate,
+td.endDate {
+  white-space: nowrap;
+}
+
+td.weeklyRate {
+  span {
+    display: inline-block;
+    width: 70px;
+    text-align: right;
+  }
+}
+
+td.paymentTotal {
+  white-space: nowrap;
+}
+
+.paymentTotalSum {
+  display: inline-block;
+  width: 70px;
+  text-align: right;
+}
+
+.daysPaid {
+  color: #aaa;
+}
+
+td.daysWorked {
+  padding: 5px 10px;
+}
+
+.daysWorkedControl {
+  width: 100px;
+}

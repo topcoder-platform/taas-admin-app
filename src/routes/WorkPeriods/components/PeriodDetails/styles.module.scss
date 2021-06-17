@@ -1,0 +1,130 @@
+@import "styles/mixins";
+@import "styles/variables";
+
+.container {
+  position: relative;
+
+  &.isFailed {
+    td {
+      // background-color: $period-row-failed-bg-color;
+    }
+  }
+}
+
+.loadingIndicator {
+  border: 1px solid #d6d6d6;
+  border-top: none;
+  padding: 31px 0 35px;
+  text-align: center;
+  @include roboto-regular;
+  font-size: 24px;
+  background-color: #fff;
+  color: #aaa;
+}
+
+.periodInfo {
+  vertical-align: top;
+  border: 1px solid #d6d6d6;
+  border-top: none;
+  border-right: none;
+  padding: 16px 22px 13px;
+}
+
+.label {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+  color: #555;
+}
+
+.sectionLabel {
+  @include roboto-medium;
+  font-size: 14px;
+  line-height: 26px;
+}
+
+.jobNameSection {
+  display: flex;
+  align-items: center;
+}
+
+.jobNameIcon {
+  flex: 0 0 auto;
+  margin-right: 16px;
+  width: 21px;
+  height: auto;
+}
+
+.sectionField {
+  flex: 1 1 auto;
+}
+
+.jobName {
+  margin-top: 2px;
+  @include roboto-medium;
+  line-height: 22px;
+}
+
+.jobNameError {
+  color: #e90c5a;
+}
+
+.billingAccountSection {
+  margin-top: 13px;
+}
+
+.billingAccountsError {
+  color: #e90c5a;
+}
+
+.detailsControls {
+  margin-top: 20px;
+}
+
+.periodHistory {
+  vertical-align: top;
+  border: 1px solid #d6d6d6;
+  border-top: none;
+  border-left: none;
+}
+
+.periodsContainer {
+  border: 1px solid #d6d6d6;
+  border-right: none;
+}
+
+.periodsHeader {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 12px;
+  background: #f4f4f4;
+
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 0;
+    height: 1px;
+    background: #e9e9e9;
+  }
+}
+
+.periodsHeaderTitle {
+  @include roboto-medium;
+  line-height: 26px;
+}
+
+.hidePastPeriods {
+  display: flex;
+  align-items: center;
+  @include roboto-medium;
+  line-height: 26px;
+}
+
+.hidePastPeriodsLabel {
+  margin-right: 7px;
+}

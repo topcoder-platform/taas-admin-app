@@ -1,0 +1,45 @@
+@import "styles/mixins";
+@import "styles/variables";
+
+.container {
+  display: inline-block;
+  padding: 3px 8px 1px;
+  @include roboto-medium;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  border-radius: 5px;
+  background: #aaa;
+  color: #fff;
+}
+
+.completed {
+  background: #0ab88a;
+}
+
+.partially_completed {
+  background: #efd047;
+}
+
+.in_progress {
+  background: #9d41c9;
+}
+
+.no_days {
+  background: #aaa;
+}
+
+.pending {
+  background: #ef476f;
+}
+
+.undefined {
+  padding: 0;
+  @include roboto-regular;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: normal;
+  background: transparent;
+  color: $text-color;
+}

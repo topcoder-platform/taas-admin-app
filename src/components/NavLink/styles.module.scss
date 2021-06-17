@@ -1,0 +1,53 @@
+@import "styles/mixins";
+
+.container {
+  display: block;
+}
+
+.item {
+  position: relative;
+  display: block;
+  $sidebar-padding-left: 24px;
+  margin-left: -$sidebar-padding-left;
+  padding-left: $sidebar-padding-left;
+  padding-top: 1px;
+
+  @include desktop {
+    $sidebar-padding-left: 20px;
+    margin-left: -$sidebar-padding-left;
+    padding-left: $sidebar-padding-left;
+  }
+
+  &.isActive {
+    &::before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 4px;
+      max-height: 24px;
+      background-color: #06d6a0;
+    }
+
+    .label {
+      @include roboto-medium;
+    }
+  }
+
+  .icon {
+    display: inline-flex;
+    vertical-align: -4px;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .label {
+    font-size: 16px;
+    line-height: 19px;
+  }
+}

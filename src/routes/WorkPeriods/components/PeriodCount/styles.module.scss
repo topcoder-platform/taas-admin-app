@@ -1,0 +1,7 @@
+@import "styles/mixins";
+
+.container {
+  @include roboto-bold;
+  font-size: 16px;
+  line-height: 26px;
+}

@@ -1,0 +1,96 @@
+@import "styles/variables";
+
+.container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 72px;
+}
+
+input.input {
+  flex: 1 1 0;
+  margin: 0;
+  border: 1px solid $control-border-color;
+  border-radius: 6px;
+  padding: 3px 0;
+  height: 30px;
+  line-height: 22px;
+  background: #fff;
+  outline: none !important;
+  box-shadow: none !important;
+  text-align: center;
+
+  &:disabled {
+    border-color: $control-disabled-border-color;
+    background-color: $control-disabled-bg-color;
+    color: $control-disabled-text-color;
+    cursor: not-allowed;
+
+    ~ .btnMinus,
+    ~ .btnPlus {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.btnMinus,
+.btnPlus {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  border: none;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.btnMinus {
+  left: 0;
+
+  &::before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 8px;
+    height: 1px;
+    background: #7f7f7f;
+  }
+}
+
+.btnPlus {
+  right: 0;
+
+  &::before,
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    background: #7f7f7f;
+  }
+
+  &::before {
+    width: 9px;
+    height: 1px;
+  }
+
+  &::after {
+    width: 1px;
+    height: 9px;
+  }
+}

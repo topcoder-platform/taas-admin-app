@@ -1,0 +1,19 @@
+@import "styles/mixins";
+
+.container {
+  padding: 15px 15px 16px;
+  text-align: center;
+
+  &:empty {
+    padding: 0;
+  }
+}
+
+.message {
+  @include roboto-medium;
+}
+
+.button {
+  color: #0d61bf;
+  cursor: pointer;
+}

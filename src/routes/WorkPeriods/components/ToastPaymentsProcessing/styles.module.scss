@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon {
+  display: inline-block;
+  margin-right: 7px;
+  width: 24px;
+  height: 24px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url("./../../../../assets/images/icon-dollar-circled.png");
+}

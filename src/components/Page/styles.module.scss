@@ -1,0 +1,24 @@
+@import "styles/mixins";
+@import "styles/variables";
+
+.container {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  @include roboto-regular;
+  font-size: 14px;
+  line-height: (22/14);
+  color: $text-color;
+  background-color: $page-bg-color;
+
+  @include desktop {
+    flex-direction: row;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}
