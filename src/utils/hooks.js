@@ -17,14 +17,12 @@ export const useClickOutside = (ref, listener, deps) => {
         listener();
       }
     };
-    document.addEventListener("mousedown", onClick);
-    document.addEventListener("touchstart", onClick);
+    document.addEventListener("click", onClick);
     return () => {
-      document.removeEventListener("touchstart", onClick);
-      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("click", onClick);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
+  }, [listener, ...deps]);
 };
 
 /**

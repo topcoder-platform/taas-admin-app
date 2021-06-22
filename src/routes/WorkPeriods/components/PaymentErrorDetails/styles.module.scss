@@ -1,0 +1,35 @@
+@import "styles/mixins";
+
+.container {
+  display: block;
+  max-width: 480px;
+  text-align: left;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  white-space: nowrap;
+
+  a {
+    color: #0d61bf;
+  }
+}
+
+.cell {
+  margin-left: 20px;
+  white-space: nowrap;
+
+  &:first-child {
+    margin-left: 0;
+  }
+}
+
+.errorMessage {
+  white-space: normal;
+}
+
+.label {
+  margin-right: 5px;
+  @include roboto-medium;
+}

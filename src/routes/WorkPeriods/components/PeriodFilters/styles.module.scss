@@ -4,6 +4,13 @@
   margin: 0 0 26px;
 }
 
+.onlyFailedPayments {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+
 .buttons {
   display: flex;
   justify-content: space-between;

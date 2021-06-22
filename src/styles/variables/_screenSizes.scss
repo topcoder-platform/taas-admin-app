@@ -2,9 +2,9 @@ $screen-codes: phone tablet desktop desktop-lg;
 
 // This map defines minimum screen widths for different devices.
 $screen-sizes: (
-  'phone': 320px,
-  'tablet': 768px,
-  'desktop': 1280px,
+  "phone": 320px,
+  "tablet": 768px,
+  "desktop": 1280px,
 );
 
 // Media queries' mixins will use minimum screen widths from this map.
@@ -20,7 +20,7 @@ $screen-min-px: ();
 $screen-min-px: map-merge(
   $screen-min-px,
   (
-    'desktop-lg': 1920px,
+    "desktop-lg": 1920px,
   )
 );
 

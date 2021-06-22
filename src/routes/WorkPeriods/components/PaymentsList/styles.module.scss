@@ -1,0 +1,41 @@
+@import "styles/mixins";
+
+.container {
+  display: block;
+}
+
+.title {
+  @include roboto-medium;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+table.paymentsList {
+  margin-top: 5px;
+
+  th {
+    @include roboto-bold;
+    padding: 10px 7px;
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+    text-align: right;
+    background: #f4f4f4;
+
+    &:first-child,
+    &:last-child {
+      text-align: left;
+    }
+
+    &:first-child {
+      padding-left: 28px;
+    }
+  }
+
+  tr {
+    td {
+      padding: 5px 7px;
+      white-space: nowrap;
+    }
+  }
+}

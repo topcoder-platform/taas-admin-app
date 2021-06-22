@@ -41,6 +41,10 @@ input.input {
   }
 }
 
+.menuList {
+  display: block;
+}
+
 .select {
   z-index: 1;
   position: relative;
@@ -157,6 +161,17 @@ input.input {
     }
   }
 
+  :global(.custom__option--is-selected) {
+    background-color: $primary-text-color !important;
+    color: #fff;
+  }
+
+  :global(.custom__clear-indicator) {
+    display: none;
+  }
+}
+
+.isMenuFocused {
   :global(.custom__option--is-focused) {
     background-color: $primary-text-color !important;
     color: #fff;

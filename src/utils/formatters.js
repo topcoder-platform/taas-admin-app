@@ -12,7 +12,7 @@ const rxWhitespace = /\s+/;
 /**
  * Creates a challenge URL using challenge id.
  *
- * @param {number} challengeId challenge id
+ * @param {string} challengeId challenge id
  * @returns {string}
  */
 export function formatChallengeUrl(challengeId) {

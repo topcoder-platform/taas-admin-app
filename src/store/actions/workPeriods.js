@@ -4,28 +4,28 @@ import * as ACTION_TYPE from "store/actionTypes/workPeriods";
 let nextErrorId = 1;
 
 /**
- * Creates an action denoting the start of loading specific challenge page.
+ * Creates an action denoting the start of loading specific working period page.
  *
  * @param {Object} cancelSource object that can be used to cancel network request
- * @param {number} pageNumber the requested challenge page number
  * @returns {Object}
  */
-export const loadWorkPeriodsPagePending = (cancelSource, pageNumber) => ({
+export const loadWorkPeriodsPagePending = (cancelSource) => ({
   type: ACTION_TYPE.WP_LOAD_PAGE_PENDING,
-  payload: { cancelSource, pageNumber },
+  payload: cancelSource,
 });
 
 /**
  * Creates an action denoting the saving of fetched working periods' page.
  *
- * @param {Array} periods array of challenge objects
- * @param {number} totalCount total number of periods for current filters' state
- * @param {number} pageCount total number of pages
+ * @param {Object} payload action payload
+ * @param {Array} payload.periods array of working period objects
+ * @param {number} payload.totalCount total number of periods for current filters' state
+ * @param {number} payload.pageCount total number of pages
  * @returns {Object}
  */
-export const loadWorkPeriodsPageSuccess = (periods, totalCount, pageCount) => ({
+export const loadWorkPeriodsPageSuccess = (payload) => ({
   type: ACTION_TYPE.WP_LOAD_PAGE_SUCCESS,
-  payload: { periods, totalCount, pageCount },
+  payload,
 });
 
 /**
@@ -326,18 +326,23 @@ export const setWorkPeriodWorkingDays = (periodId, daysWorked) => ({
  * @returns {Object}
  */
 export const setWorkPeriodDataPending = (periodId, cancelSource) => ({
-  type: ACTION_TYPE.WP_SET_DATA_PENDING,
+  type: ACTION_TYPE.WP_SET_PERIOD_DATA_PENDING,
   payload: { periodId, cancelSource },
 });
 
 export const setWorkPeriodDataSuccess = (periodId, data) => ({
-  type: ACTION_TYPE.WP_SET_DATA_SUCCESS,
+  type: ACTION_TYPE.WP_SET_PERIOD_DATA_SUCCESS,
   payload: { periodId, data },
 });
 
 export const setWorkPeriodDataError = (periodId, message) => ({
-  type: ACTION_TYPE.WP_SET_DATA_ERROR,
+  type: ACTION_TYPE.WP_SET_PERIOD_DATA_ERROR,
   payload: { periodId, message },
+});
+
+export const toggleShowFailedPaymentsOnly = (on = null) => ({
+  type: ACTION_TYPE.WP_TOGGLE_ONLY_FAILED_PAYMENTS,
+  payload: on,
 });
 
 /**
@@ -382,4 +387,16 @@ export const toggleWorkingPeriodsVisible = (on = null) => ({
 export const toggleWorkPeriodsProcessingPeyments = (on = null) => ({
   type: ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS,
   payload: on,
+});
+
+/**
+ * Creates an action denoting an update of working periods state slice using
+ * the provided query.
+ *
+ * @param {string} query URL search query
+ * @returns {Object}
+ */
+export const updateStateFromQuery = (query) => ({
+  type: ACTION_TYPE.WP_UPDATE_STATE_FROM_QUERY,
+  payload: query,
 });

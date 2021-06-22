@@ -5,7 +5,11 @@ import store from "store";
 import { disableSidebarForRoute } from "@topcoder/micro-frontends-navbar-app";
 import WorkPeriods from "routes/WorkPeriods";
 import Freelancers from "routes/Freelancers";
-import { APP_BASE_PATH } from "./constants";
+import {
+  APP_BASE_PATH,
+  FREELANCERS_PATH,
+  WORK_PERIODS_PATH,
+} from "./constants";
 import "styles/global.scss";
 
 export default function Root() {
@@ -16,14 +20,9 @@ export default function Root() {
   return (
     <Provider store={store}>
       <Router>
-        <Redirect
-          from={APP_BASE_PATH}
-          to={`${APP_BASE_PATH}/work-periods`}
-          exact
-          noThrow
-        />
-        <WorkPeriods path={`${APP_BASE_PATH}/work-periods`} />
-        <Freelancers path={`${APP_BASE_PATH}/freelancers`} />
+        <Redirect from={APP_BASE_PATH} to={WORK_PERIODS_PATH} exact noThrow />
+        <WorkPeriods path={WORK_PERIODS_PATH} />
+        <Freelancers path={FREELANCERS_PATH} />
       </Router>
     </Provider>
   );

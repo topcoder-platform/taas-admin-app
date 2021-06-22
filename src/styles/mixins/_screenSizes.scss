@@ -1,4 +1,4 @@
-@import 'variables/screenSizes';
+@import "variables/screenSizes";
 
 // There's no need for phone() mixin for phone and larger screens to exist
 // because styles for these screens are simply added without media queries.

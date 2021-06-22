@@ -12,6 +12,7 @@ import {
   setWorkPeriodsSorting,
   toggleWorkingPeriodsVisible,
 } from "store/actions/workPeriods";
+import { updateQueryFromState } from "store/thunks/workPeriods";
 import styles from "./styles.module.scss";
 
 /**
@@ -29,6 +30,7 @@ const PeriodListHead = () => {
   const onSortingChange = useCallback(
     (sorting) => {
       dispatch(setWorkPeriodsSorting(sorting));
+      dispatch(updateQueryFromState());
     },
     [dispatch]
   );
@@ -49,9 +51,9 @@ const PeriodListHead = () => {
           />
         </div>
       </th>
-      {HEAD_CELLS.map(({ id, label, disableSort }) => (
+      {HEAD_CELLS.map(({ id, className, label, disableSort }) => (
         <th key={id}>
-          <div className={cn(styles.colHead)}>
+          <div className={cn(styles.colHead, className)}>
             <span className={styles.colLabel}>{label}</span>
             {!disableSort && (
               <SortingControl
@@ -73,8 +75,8 @@ const HEAD_CELLS = [
   { label: "Team Name", id: SORT_BY.TEAM_NAME, disableSort: true },
   { label: "Start Date", id: SORT_BY.START_DATE },
   { label: "End Date", id: SORT_BY.END_DATE },
-  { label: "Weekly Rate", id: SORT_BY.WEEKLY_RATE },
-  { label: "Total Paid", id: SORT_BY.PAYMENT_TOTAL },
+  { label: "Weekly Rate", id: SORT_BY.WEEKLY_RATE, className: "weeklyRate" },
+  { label: "Total Paid", id: SORT_BY.PAYMENT_TOTAL, className: "totalPaid" },
   { label: "Status", id: SORT_BY.PAYMENT_STATUS },
   { label: "Working Days", id: SORT_BY.WORKING_DAYS },
 ];

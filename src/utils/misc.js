@@ -67,6 +67,10 @@ export function replaceItems(array, map) {
   return result;
 }
 
+export function preventDefault(event) {
+  event.preventDefault();
+}
+
 /**
  * Stops event propagation.
  *
@@ -143,5 +147,7 @@ export const extractJobName = (data) => data.title;
 export const extractResponseData = (response) => response.data;
 
 export const increment = (value) => value + 1;
+
+export const negate = (value) => !value;
 
 export const noop = () => {};

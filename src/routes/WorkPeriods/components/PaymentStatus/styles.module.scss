@@ -22,16 +22,22 @@
   background: #efd047;
 }
 
-.in_progress {
+.in_progress,
+.scheduled {
   background: #9d41c9;
 }
 
+.cancelled,
 .no_days {
   background: #aaa;
 }
 
 .pending {
   background: #ef476f;
+}
+
+.failed {
+  background: $error-color;
 }
 
 .undefined {

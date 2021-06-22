@@ -4,7 +4,7 @@ import {
   JOBS_API_URL,
   PAYMENTS_API_URL,
   PROJECTS_API_URL,
-  QUERY_PARAM_NAMES,
+  API_QUERY_PARAM_NAMES,
   WORK_PERIODS_API_URL,
 } from "constants/workPeriods";
 import { buildRequestQuery, extractResponseData } from "utils/misc";
@@ -98,9 +98,12 @@ export const fetchWorkPeriods = (rbId, source) => {
 export const fetchResourceBookings = (params) => {
   const source = CancelToken.source();
   return [
-    axios.get(`${RB_API_URL}?${buildRequestQuery(params, QUERY_PARAM_NAMES)}`, {
-      cancelToken: source.token,
-    }),
+    axios.get(
+      `${RB_API_URL}?${buildRequestQuery(params, API_QUERY_PARAM_NAMES)}`,
+      {
+        cancelToken: source.token,
+      }
+    ),
     source,
   ];
 };

@@ -8,6 +8,7 @@ import {
   setWorkPeriodsPageNumber,
   setWorkPeriodsPageSize,
 } from "store/actions/workPeriods";
+import { updateQueryFromState } from "store/thunks/workPeriods";
 import styles from "./styles.module.scss";
 
 /**
@@ -25,6 +26,7 @@ const PeriodsPagination = ({ className, id }) => {
   const onPageNumberClick = useCallback(
     (pageNumber) => {
       dispatch(setWorkPeriodsPageNumber(+pageNumber));
+      dispatch(updateQueryFromState());
     },
     [dispatch]
   );
@@ -32,6 +34,7 @@ const PeriodsPagination = ({ className, id }) => {
   const onPageSizeChange = useCallback(
     (pageSize) => {
       dispatch(setWorkPeriodsPageSize(+pageSize));
+      dispatch(updateQueryFromState());
     },
     [dispatch]
   );

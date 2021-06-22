@@ -1,4 +1,5 @@
 import axios from "axios";
+import { navigate } from "@reach/router";
 import * as actions from "store/actions/workPeriods";
 import * as selectors from "store/selectors/workPeriods";
 import * as services from "services/workPeriods";
@@ -7,8 +8,9 @@ import {
   API_SORT_BY,
   DATE_FORMAT_API,
   PAYMENT_STATUS_MAP,
-  FIELDS_QUERY,
+  API_FIELDS_QUERY,
   JOB_NAME_NONE,
+  API_CHALLENGE_PAYMENT_STATUS,
 } from "constants/workPeriods";
 import {
   extractJobName,
@@ -17,6 +19,7 @@ import {
   replaceItems,
 } from "utils/misc";
 import {
+  makeUrlQuery,
   normalizeBillingAccounts,
   normalizeDetailsPeriodItems,
   normalizePeriodData,
@@ -29,7 +32,7 @@ import {
   makeToastPaymentsWarning,
   makeToastPaymentsError,
 } from "routes/WorkPeriods/utils/toasts";
-import { RESOURCE_BOOKING_STATUS } from "constants/index.js";
+import { RESOURCE_BOOKING_STATUS, WORK_PERIODS_PATH } from "constants/index.js";
 
 /**
  * Thunk that loads the specified working periods' page. If page number is not
@@ -37,65 +40,84 @@ import { RESOURCE_BOOKING_STATUS } from "constants/index.js";
  * working period filters are loaded from the current state to construct
  * a request query.
  *
- * @param {number} [pageNumber] page number to load
+ * @returns {Promise}
+ */
+export const loadWorkPeriodsPage = async (dispatch, getState) => {
+  const workPeriods = selectors.getWorkPeriodsStateSlice(getState());
+  if (workPeriods.cancelSource) {
+    // If there's an ongoing request we just cancel it since the data that comes
+    // with its response will not correspond to application's current state,
+    // namely filters and sorting.
+    workPeriods.cancelSource.cancel();
+  }
+  const { filters, sorting, pagination } = workPeriods;
+
+  const sortOrder = sorting.order;
+  const sortBy = SORT_BY_MAP[sorting.criteria] || API_SORT_BY.USER_HANDLE;
+
+  const { onlyFailedPayments, userHandle } = filters;
+  const [startDate] = filters.dateRange;
+  const paymentStatuses = replaceItems(
+    Object.keys(filters.paymentStatuses),
+    PAYMENT_STATUS_MAP
+  );
+
+  // For parameter description see:
+  // https://topcoder-platform.github.io/taas-apis/#/ResourceBookings/get_resourceBookings
+  const [promise, cancelSource] = services.fetchResourceBookings({
+    fields: API_FIELDS_QUERY,
+    page: pagination.pageNumber,
+    perPage: pagination.pageSize,
+    sortBy,
+    sortOrder,
+    // we only want to show Resource Bookings with status "placed"
+    status: RESOURCE_BOOKING_STATUS.PLACED,
+    ["workPeriods.userHandle"]: userHandle,
+    ["workPeriods.startDate"]: startDate.format(DATE_FORMAT_API),
+    ["workPeriods.paymentStatus"]: paymentStatuses,
+    ["workPeriods.payments.status"]: onlyFailedPayments
+      ? API_CHALLENGE_PAYMENT_STATUS.FAILED
+      : null,
+  });
+  dispatch(actions.loadWorkPeriodsPagePending(cancelSource));
+  let totalCount, periods, pageCount;
+  try {
+    const response = await promise;
+    ({ totalCount, pageCount } = extractResponsePagination(response));
+    const data = extractResponseData(response);
+    periods = normalizePeriodItems(data);
+  } catch (error) {
+    // If request was cancelled by the next call to loadWorkPeriodsPage
+    // there's nothing more to do.
+    if (!axios.isCancel(error)) {
+      dispatch(actions.loadWorkPeriodsPageError(error.toString()));
+    }
+    return;
+  }
+  dispatch(
+    actions.loadWorkPeriodsPageSuccess({
+      periods,
+      totalCount,
+      pageCount,
+    })
+  );
+};
+
+/**
+ * Updates URL from current state.
+ *
+ * @param {boolean} replace whether to push or replace the history state
  * @returns {function}
  */
-export const loadWorkPeriodsPage =
-  (pageNumber) => async (dispatch, getState) => {
-    const workPeriods = selectors.getWorkPeriodsStateSlice(getState());
-    if (workPeriods.cancelSource) {
-      // If there's an ongoing request we just cancel it since the data that comes
-      // with its response will not correspond to application's current state,
-      // namely filters and sorting.
-      workPeriods.cancelSource.cancel();
+export const updateQueryFromState =
+  (replace = false) =>
+  (dispatch, getState) => {
+    const query = makeUrlQuery(selectors.getWorkPeriodsStateSlice(getState()));
+    if (query !== window.location.search.slice(1)) {
+      setTimeout(() => {
+        navigate(`${WORK_PERIODS_PATH}?${query}`, { replace });
+      }, 100); // if executed synchronously navigate() causes a noticable lag
     }
-    const { filters, sorting, pagination } = workPeriods;
-
-    // If page number is not specified get it from current state.
-    pageNumber = pageNumber || pagination.pageNumber;
-
-    const sortOrder = sorting.order;
-    const sortBy = SORT_BY_MAP[sorting.criteria] || API_SORT_BY.USER_HANDLE;
-
-    const [startDate] = filters.dateRange;
-    const paymentStatuses = replaceItems(
-      Object.keys(filters.paymentStatuses),
-      PAYMENT_STATUS_MAP
-    );
-
-    // For parameter description see:
-    // https://topcoder-platform.github.io/taas-apis/#/ResourceBookings/get_resourceBookings
-    const [promise, cancelSource] = services.fetchResourceBookings({
-      fields: FIELDS_QUERY,
-      page: pageNumber,
-      perPage: pagination.pageSize,
-      sortBy,
-      sortOrder,
-      // we only want to show Resource Bookings with status "placed"
-      status: RESOURCE_BOOKING_STATUS.PLACED,
-      ["workPeriods.userHandle"]: filters.userHandle,
-      ["workPeriods.startDate"]: startDate.format(DATE_FORMAT_API),
-      ["workPeriods.paymentStatus"]: paymentStatuses,
-    });
-    dispatch(actions.loadWorkPeriodsPagePending(cancelSource, pageNumber));
-    let totalCount, periods, pageCount;
-    try {
-      const response = await promise;
-      ({ totalCount, pageNumber, pageCount } =
-        extractResponsePagination(response));
-      const data = extractResponseData(response);
-      periods = normalizePeriodItems(data);
-    } catch (error) {
-      // If request was cancelled by the next call to loadWorkPeriodsPage
-      // there's nothing more to do.
-      if (!axios.isCancel(error)) {
-        dispatch(actions.loadWorkPeriodsPageError(error.toString()));
-      }
-      return;
-    }
-    dispatch(
-      actions.loadWorkPeriodsPageSuccess(periods, totalCount, pageCount)
-    );
   };
 
 /**

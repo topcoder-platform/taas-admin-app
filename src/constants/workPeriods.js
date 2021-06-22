@@ -1,12 +1,20 @@
 // @ts-ignore
 import { API } from "../../config";
+import * as API_CHALLENGE_PAYMENT_STATUS from "./workPeriods/apiChallengePaymentStatus";
 import * as API_PAYMENT_STATUS from "./workPeriods/apiPaymentStatus";
 import * as API_SORT_BY from "./workPeriods/apiSortBy";
 import * as SORT_BY from "./workPeriods/sortBy";
 import * as SORT_ORDER from "./workPeriods/sortOrder";
 import * as PAYMENT_STATUS from "./workPeriods/paymentStatus";
 
-export { API_PAYMENT_STATUS, API_SORT_BY, SORT_BY, SORT_ORDER, PAYMENT_STATUS };
+export {
+  API_CHALLENGE_PAYMENT_STATUS,
+  API_PAYMENT_STATUS,
+  API_SORT_BY,
+  SORT_BY,
+  SORT_ORDER,
+  PAYMENT_STATUS,
+};
 
 // resource bookings API url
 export const RB_API_URL = `${API.V5}/resourceBookings`;
@@ -19,7 +27,7 @@ export const DATE_FORMAT_API = "YYYY-MM-DD";
 export const DATE_FORMAT_UI = "MMM DD, YYYY";
 
 // Field names that are required to be retrieved for display, filtering and sorting.
-export const REQUIRED_FIELDS = [
+export const API_REQUIRED_FIELDS = [
   "id",
   "jobId",
   "projectId",
@@ -37,18 +45,25 @@ export const REQUIRED_FIELDS = [
   "workPeriods.paymentTotal",
   "workPeriods.daysWorked",
   "workPeriods.daysPaid",
+  "workPeriods.payments.amount",
+  "workPeriods.payments.challengeId",
+  "workPeriods.payments.days",
+  "workPeriods.payments.id",
+  "workPeriods.payments.memberRate",
+  "workPeriods.payments.status",
+  "workPeriods.payments.statusDetails",
 ];
 
 // Valid parameter names for requests.
-export const QUERY_PARAM_NAMES = [
+export const API_QUERY_PARAM_NAMES = [
   "fields",
   "page",
   "perPage",
   "sortBy",
   "sortOrder",
-].concat(REQUIRED_FIELDS);
+].concat(API_REQUIRED_FIELDS);
 
-export const FIELDS_QUERY = REQUIRED_FIELDS.join(",");
+export const API_FIELDS_QUERY = API_REQUIRED_FIELDS.join(",");
 
 export const SORT_BY_DEFAULT = SORT_BY.USER_HANDLE;
 
@@ -65,11 +80,15 @@ export const SORT_BY_MAP = {
 };
 
 export const PAYMENT_STATUS_LABELS = {
-  [PAYMENT_STATUS.NO_DAYS]: "No Days",
+  [PAYMENT_STATUS.CANCELLED]: "Cancelled",
   [PAYMENT_STATUS.COMPLETED]: "Completed",
+  [PAYMENT_STATUS.FAILED]: "Failed",
+  [PAYMENT_STATUS.IN_PROGRESS]: "In Progress",
+  [PAYMENT_STATUS.NO_DAYS]: "No Days",
   [PAYMENT_STATUS.PARTIALLY_COMPLETED]: "Partially Completed",
   [PAYMENT_STATUS.PENDING]: "Pending",
-  [PAYMENT_STATUS.IN_PROGRESS]: "In Progress",
+  [PAYMENT_STATUS.SCHEDULED]: "Scheduled",
+  [PAYMENT_STATUS.UNDEFINED]: "NA",
 };
 
 export const PAYMENT_STATUS_MAP = {
@@ -89,6 +108,25 @@ export const API_PAYMENT_STATUS_MAP = (function () {
   }
   return obj;
 })();
+
+export const API_CHALLENGE_PAYMENT_STATUS_MAP = {
+  [API_CHALLENGE_PAYMENT_STATUS.CANCELLED]: PAYMENT_STATUS.CANCELLED,
+  [API_CHALLENGE_PAYMENT_STATUS.COMPLETED]: PAYMENT_STATUS.COMPLETED,
+  [API_CHALLENGE_PAYMENT_STATUS.FAILED]: PAYMENT_STATUS.FAILED,
+  [API_CHALLENGE_PAYMENT_STATUS.IN_PROGRESS]: PAYMENT_STATUS.IN_PROGRESS,
+  [API_CHALLENGE_PAYMENT_STATUS.SCHEDULED]: PAYMENT_STATUS.SCHEDULED,
+};
+
+export const URL_QUERY_PARAM_MAP = new Map([
+  ["startDate", "startDate"],
+  ["paymentStatuses", "status"],
+  ["onlyFailedPayments", "onlyFailed"],
+  ["userHandle", "user"],
+  ["criteria", "by"],
+  ["order", "order"],
+  ["pageSize", "perPage"],
+  ["pageNumber", "page"],
+]);
 
 export const JOB_NAME_LOADING = "Loading...";
 export const JOB_NAME_NONE = "<Job is not assigned>";

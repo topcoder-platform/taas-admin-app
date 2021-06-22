@@ -50,6 +50,9 @@ export const getWorkPeriodsSelected = (state) =>
  */
 export const getWorkPeriodsFilters = (state) => state.workPeriods.filters;
 
+export const getWorkPeriodsPaymentStatuses = (state) =>
+  state.workPeriods.filters.paymentStatuses;
+
 export const getWorkPeriodsDateRange = (state) =>
   state.workPeriods.filters.dateRange;
 
@@ -59,8 +62,16 @@ export const getWorkPeriodsSorting = (state) => state.workPeriods.sorting;
 
 export const getWorkPeriodsPagination = (state) => state.workPeriods.pagination;
 
+export const getWorkPeriodsPageNumber = (state) =>
+  state.workPeriods.pagination.pageNumber;
+
 export const getWorkPeriodsPageSize = (state) =>
   state.workPeriods.pagination.pageSize;
+
+export const getWorkPeriodsUrlQuery = (state) => state.workPeriods.query;
+
+export const getWorkPeriodsIsQueryFromState = (state) =>
+  state.workPeriods.isQueryFromState;
 
 export const getWorkPeriodsCount = (state) => state.workPeriods.periods.length;
 

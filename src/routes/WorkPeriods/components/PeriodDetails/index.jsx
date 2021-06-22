@@ -85,7 +85,7 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
       )}
     >
       {periodsIsLoading ? (
-        <td colSpan={8}>
+        <td colSpan={9}>
           <div className={styles.loadingIndicator}>Loading...</div>
         </td>
       ) : (

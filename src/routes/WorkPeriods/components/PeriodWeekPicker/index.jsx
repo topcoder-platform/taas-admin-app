@@ -6,6 +6,7 @@ import moment from "moment";
 import WeekPicker from "components/WeekPicker";
 import { getWorkPeriodsDateRange } from "store/selectors/workPeriods";
 import { setWorkPeriodsDateRange } from "store/actions/workPeriods";
+import { updateQueryFromState } from "store/thunks/workPeriods";
 import styles from "./styles.module.scss";
 
 /**
@@ -22,16 +23,19 @@ const PeriodWeekPicker = ({ className }) => {
   const onWeekSelect = useCallback(
     (date) => {
       dispatch(setWorkPeriodsDateRange(moment(date)));
+      dispatch(updateQueryFromState());
     },
     [dispatch]
   );
 
   const onNextWeekSelect = useCallback(() => {
     dispatch(setWorkPeriodsDateRange(startDate.clone().add(1, "week")));
+    dispatch(updateQueryFromState());
   }, [startDate, dispatch]);
 
   const onPreviousWeekSelect = useCallback(() => {
     dispatch(setWorkPeriodsDateRange(startDate.clone().add(-1, "week")));
+    dispatch(updateQueryFromState());
   }, [startDate, dispatch]);
 
   return (

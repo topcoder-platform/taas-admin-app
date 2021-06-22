@@ -5,8 +5,9 @@ import cn from "classnames";
 import debounce from "lodash/debounce";
 import moment from "moment";
 import IntegerField from "components/IntegerField";
+import PaymentError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
-import PeriodsHistoryPaymentTotal from "../PeriodsHistoryPaymentTotal";
+import PaymentTotal from "../PaymentTotal";
 import { PAYMENT_STATUS } from "constants/workPeriods";
 import { setDetailsWorkingDays } from "store/actions/workPeriods";
 import { updateWorkPeriodWorkingDays } from "store/thunks/workPeriods";
@@ -63,9 +64,16 @@ const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
       </td>
       <td className={styles.dateLabel}>{dateLabel}</td>
       <td className={styles.paymentTotal}>
-        <PeriodsHistoryPaymentTotal
+        {data.paymentErrorLast && (
+          <PaymentError
+            className={styles.paymentError}
+            errorDetails={data.paymentErrorLast}
+            isImportant={data.paymentStatus !== PAYMENT_STATUS.COMPLETED}
+          />
+        )}
+        <PaymentTotal
           className={styles.paymentTotalContainer}
-          payments={item.payments}
+          payments={data.payments}
           paymentTotal={data.paymentTotal}
           daysPaid={data.daysPaid}
         />
@@ -74,7 +82,7 @@ const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
         <PaymentStatus status={data.paymentStatus} />
       </td>
       <td className={styles.daysWorked}>
-        {data.paymentStatus === PAYMENT_STATUS.PAID ? (
+        {data.paymentStatus === PAYMENT_STATUS.COMPLETED ? (
           `${daysWorked} ${daysWorked === 1 ? "Day" : "Days"}`
         ) : (
           <IntegerField
@@ -98,12 +106,13 @@ PeriodsHistoryItem.propTypes = {
     id: PT.string.isRequired,
     startDate: PT.oneOfType([PT.string, PT.number]).isRequired,
     endDate: PT.oneOfType([PT.string, PT.number]).isRequired,
-    payments: PT.array,
     weeklyRate: PT.number,
   }).isRequired,
   data: PT.shape({
     daysWorked: PT.number.isRequired,
     daysPaid: PT.number.isRequired,
+    paymentErrorLast: PT.object,
+    payments: PT.array,
     paymentStatus: PT.string.isRequired,
     paymentTotal: PT.number.isRequired,
   }).isRequired,

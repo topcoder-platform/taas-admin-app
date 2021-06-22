@@ -6,8 +6,11 @@ import debounce from "lodash/debounce";
 import Checkbox from "components/Checkbox";
 import IntegerField from "components/IntegerField";
 import ProjectName from "components/ProjectName";
+import PaymentError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
+import PaymentTotal from "../PaymentTotal";
 import PeriodDetails from "../PeriodDetails";
+import { PAYMENT_STATUS } from "constants/workPeriods";
 import {
   setWorkPeriodWorkingDays,
   toggleWorkPeriod,
@@ -17,11 +20,7 @@ import {
   updateWorkPeriodWorkingDays,
 } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
-import {
-  currencyFormatter,
-  formatUserHandleLink,
-  formatWeeklyRate,
-} from "utils/formatters";
+import { formatUserHandleLink, formatWeeklyRate } from "utils/formatters";
 import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
 
@@ -122,10 +121,21 @@ const PeriodItem = ({
           <span>{formatWeeklyRate(item.weeklyRate)}</span>
         </td>
         <td className={styles.paymentTotal}>
-          <span className={styles.paymentTotalSum}>
-            {currencyFormatter.format(data.paymentTotal)}
-          </span>
-          <span className={styles.daysPaid}> ({data.daysPaid})</span>
+          {data.paymentErrorLast && (
+            <PaymentError
+              className={styles.paymentError}
+              errorDetails={data.paymentErrorLast}
+              isImportant={data.paymentStatus !== PAYMENT_STATUS.COMPLETED}
+              popupStrategy="fixed"
+            />
+          )}
+          <PaymentTotal
+            className={styles.paymentTotalContainer}
+            daysPaid={data.daysPaid}
+            payments={data.payments}
+            paymentTotal={data.paymentTotal}
+            popupStrategy="fixed"
+          />
         </td>
         <td>
           <PaymentStatus status={data.paymentStatus} />
@@ -171,6 +181,8 @@ PeriodItem.propTypes = {
   data: PT.shape({
     daysWorked: PT.number.isRequired,
     daysPaid: PT.number.isRequired,
+    paymentErrorLast: PT.object,
+    payments: PT.array,
     paymentStatus: PT.string.isRequired,
     paymentTotal: PT.number.isRequired,
   }).isRequired,

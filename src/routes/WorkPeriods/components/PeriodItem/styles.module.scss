@@ -1,21 +1,21 @@
 @import "styles/mixins";
 @import "styles/variables";
 
-.container {
-  td {
+tr.container {
+  > td {
     padding-left: 17px;
     padding-right: 17px;
     background: #fff;
   }
 
   &:nth-child(odd) {
-    td {
+    > td {
       background: #f9f9f9;
     }
   }
 
   &.hasDetails {
-    td {
+    > td {
       border-top: 1px solid #d6d6d6;
       background: #fff;
 
@@ -34,7 +34,7 @@
   }
 
   &.isFailed {
-    td {
+    > td {
       background-color: $period-row-failed-bg-color;
     }
   }
@@ -50,6 +50,7 @@ td.toggle {
     @include roboto-bold;
     color: #0d61bf;
   }
+
   span {
     display: block;
     max-width: 20em;
@@ -70,25 +71,20 @@ td.endDate {
 }
 
 td.weeklyRate {
-  span {
-    display: inline-block;
-    width: 70px;
-    text-align: right;
-  }
-}
-
-td.paymentTotal {
-  white-space: nowrap;
-}
-
-.paymentTotalSum {
-  display: inline-block;
-  width: 70px;
   text-align: right;
 }
 
-.daysPaid {
-  color: #aaa;
+td.paymentTotal {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.paymentError {
+  margin-right: 5px;
+}
+
+.paymentTotalContainer {
+  position: relative;
 }
 
 td.daysWorked {
