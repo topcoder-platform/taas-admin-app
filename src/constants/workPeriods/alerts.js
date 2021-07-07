@@ -1,0 +1,2 @@
+export const BA_NOT_ASSIGNED = "BA_NOT_ASSIGNED";
+export const LAST_BOOKING_WEEK = "LAST_BOOKING_WEEK";

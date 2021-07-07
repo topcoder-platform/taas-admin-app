@@ -19,7 +19,8 @@ const PaymentsList = ({ className, payments }) => (
           <th>Weekly Rate</th>
           <th>Days</th>
           <th>Amount</th>
-          <th>Status</th>
+          <th className={styles.paymentStatus}>Status</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>

@@ -1,12 +1,107 @@
 import moment from "moment";
 import {
+  ALERT,
   API_CHALLENGE_PAYMENT_STATUS_MAP,
   API_PAYMENT_STATUS_MAP,
   DATE_FORMAT_API,
-  DATE_FORMAT_UI,
+  DATE_FORMAT_ISO,
   PAYMENT_STATUS,
+  REASON_DISABLED,
   URL_QUERY_PARAM_MAP,
 } from "constants/workPeriods";
+
+/**
+ * Computes maximum allowed working days based on resource booking start and end
+ * dates and working period start and end dates.
+ *
+ * @param {string} bookingStart resource booking start date
+ * @param {string} bookingEnd resource booking end date
+ * @param {Object} periodStart working period start date
+ * @param {Object} periodEnd working period end date
+ * @returns {number}
+ */
+export function computeDaysWorkedMax(
+  bookingStart,
+  bookingEnd,
+  periodStart,
+  periodEnd
+) {
+  let start = periodStart.day() + 1; // Monday
+  let end = periodEnd.day() - 1; // Friday
+  if (periodStart.isBefore(bookingStart, "date")) {
+    // booking starts from Monday, Tuesday and so on
+    start = moment(bookingStart).day();
+  }
+  if (periodEnd.isAfter(bookingEnd, "date")) {
+    // booking ends at Friday, Thursday and so on
+    end = moment(bookingEnd).day();
+  }
+  return end - start + 1;
+}
+
+/**
+ * Returns an array of working period's alert ids.
+ *
+ * @param {Object} period working period basic data object containing
+ * resource booking end date
+ * @param {Object} periodEnd Moment object with working period end
+ * @returns {Array}
+ */
+export function createPeriodAlerts(period, periodEnd) {
+  const alerts = [];
+  if (!period.billingAccountId) {
+    alerts.push(ALERT.BA_NOT_ASSIGNED);
+  }
+  if (periodEnd.isSameOrAfter(period.bookingEnd, "date")) {
+    alerts.push(ALERT.LAST_BOOKING_WEEK);
+  }
+  return alerts.length ? alerts : undefined;
+}
+
+/**
+ * Checks for reasons the specified working period should be disabled for
+ * payment processing.
+ *
+ * @param {Object} period working period object
+ * @returns {?string[]}
+ */
+export function findReasonsDisabled(period) {
+  const reasons = [];
+  if (!period.billingAccountId) {
+    reasons.push(REASON_DISABLED.NO_BILLING_ACCOUNT);
+  }
+  if (!period.weeklyRate) {
+    reasons.push(REASON_DISABLED.NO_MEMBER_RATE);
+  }
+  const data = period.data;
+  if (data && data.daysWorked === data.daysPaid) {
+    reasons.push(REASON_DISABLED.NO_DAYS_TO_PAY_FOR);
+  }
+  return reasons.length ? reasons : undefined;
+}
+
+export function addValueImmutable(items, value) {
+  if (!items) {
+    return [value];
+  }
+  if (items.indexOf(value) < 0) {
+    items = [...items, value];
+  }
+  return items;
+}
+
+export function removeValueImmutable(items, value) {
+  if (!items) {
+    return undefined;
+  }
+  let index = items.indexOf(value);
+  if (index >= 0) {
+    let newItems = [...items];
+    newItems.splice(index, 1);
+    return newItems.length ? newItems : undefined;
+  }
+  return items;
+}
 
 /**
  * Creates a URL search query from current state.
@@ -54,10 +149,14 @@ export function normalizePeriodItems(items) {
       billingAccountId: billingAccountId === null ? 0 : billingAccountId,
       teamName: "",
       userHandle: workPeriod.userHandle || "",
-      startDate: item.startDate
-        ? moment(item.startDate).format(DATE_FORMAT_UI)
+      // resource booking period start date
+      bookingStart: item.startDate
+        ? moment(item.startDate).format(DATE_FORMAT_ISO)
         : "",
-      endDate: item.endDate ? moment(item.endDate).format(DATE_FORMAT_UI) : "",
+      // resource booking period end date
+      bookingEnd: item.endDate
+        ? moment(item.endDate).format(DATE_FORMAT_ISO)
+        : "",
       weeklyRate: item.memberRate,
       data: normalizePeriodData(workPeriod),
     });
@@ -70,13 +169,17 @@ export function normalizeDetailsPeriodItems(items) {
   for (let item of items) {
     periods.push({
       id: item.id,
-      startDate: item.startDate ? moment(item.startDate).valueOf() : 0,
-      endDate: item.endDate ? moment(item.endDate).valueOf() : 0,
+      // working period start date
+      start: moment(item.startDate || undefined),
+      // working period end date
+      end: moment(item.endDate || undefined),
       weeklyRate: item.memberRate,
       data: normalizePeriodData(item),
     });
   }
-  periods.sort(sortByStartDate);
+  periods.sort(
+    (periodA, periodB) => periodA.start.valueOf() - periodB.start.valueOf()
+  );
   return periods;
 }
 
@@ -94,8 +197,8 @@ export function normalizeDetailsPeriodItems(items) {
  */
 export function normalizePeriodData(period) {
   const data = {
-    daysWorked: period.daysWorked === null ? 5 : +period.daysWorked || 0,
     daysPaid: +period.daysPaid || 0,
+    daysWorked: period.daysWorked === null ? 5 : +period.daysWorked || 0,
     paymentStatus: normalizePaymentStatus(period.paymentStatus),
     paymentTotal: +period.paymentTotal || 0,
   };
@@ -103,17 +206,24 @@ export function normalizePeriodData(period) {
   if (payments) {
     let lastFailedPayment = null;
     for (let payment of payments) {
-      payment.status =
-        API_CHALLENGE_PAYMENT_STATUS_MAP[payment.status] ||
-        PAYMENT_STATUS.UNDEFINED;
+      payment.createdAt = moment(payment.createdAt).valueOf();
+      payment.status = normalizeChallengePaymentStatus(payment.status);
       if (payment.status === PAYMENT_STATUS.FAILED) {
         lastFailedPayment = payment;
       }
     }
     data.paymentErrorLast = lastFailedPayment?.statusDetails;
-    data.payments = payments;
+    data.payments = payments.sort(
+      (paymentA, paymentB) => paymentA.createdAt - paymentB.createdAt
+    );
   }
   return data;
+}
+
+export function normalizeChallengePaymentStatus(paymentStatus) {
+  return (
+    API_CHALLENGE_PAYMENT_STATUS_MAP[paymentStatus] || PAYMENT_STATUS.UNDEFINED
+  );
 }
 
 export function normalizePaymentStatus(paymentStatus) {
@@ -125,15 +235,12 @@ export function normalizePaymentStatus(paymentStatus) {
  * billing account.
  *
  * @param {Array} accounts array of billing accounts received for specific project
- * @param {number} accountId resource booking's billing account id
  * @returns {Array}
  */
-export function normalizeBillingAccounts(accounts, accountId = -1) {
+export function normalizeBillingAccounts(accounts) {
   const accs = [];
-  let hasSelectedAccount = false;
   for (let acc of accounts) {
     const value = +acc.tcBillingAccountId;
-    hasSelectedAccount = hasSelectedAccount || value === accountId;
     const endDate = acc.endDate
       ? moment(acc.endDate).format("DD MMM YYYY")
       : "";
@@ -142,16 +249,9 @@ export function normalizeBillingAccounts(accounts, accountId = -1) {
       label: `${acc.name} (${value})` + (endDate ? ` - ${endDate}` : ""),
     });
   }
-  if (!hasSelectedAccount && accountId > 0) {
-    accs.unshift(createAssignedBillingAccountOption(accountId));
-  }
   return accs;
 }
 
 export function createAssignedBillingAccountOption(accountId) {
   return { value: accountId, label: `<Assigned Account> (${accountId})` };
-}
-
-export function sortByStartDate(itemA, itemB) {
-  return itemA.startDate - itemB.startDate;
 }

@@ -4,7 +4,8 @@
   padding: 0 10px;
 
   @include desktop {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     padding: 0 35px;
+    min-width: 0;
   }
 }

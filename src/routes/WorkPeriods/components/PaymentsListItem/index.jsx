@@ -2,11 +2,12 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useCallback, useRef } from "react";
 import PT from "prop-types";
+import PaymentCancel from "../PaymentCancel";
+import PaymentError from "../PaymentError";
+import PaymentStatus from "../PaymentStatus";
 import { currencyFormatter, formatChallengeUrl } from "utils/formatters";
 import { PAYMENT_STATUS } from "constants/workPeriods";
-import PaymentStatus from "../PaymentStatus";
 import styles from "./styles.module.scss";
-import PaymentError from "../PaymentError";
 
 const PaymentsListItem = ({ item }) => {
   const inputRef = useRef();
@@ -57,6 +58,9 @@ const PaymentsListItem = ({ item }) => {
             />
           )}
         </div>
+      </td>
+      <td className={styles.paymentCancel}>
+        <PaymentCancel item={item} />
       </td>
     </tr>
   );

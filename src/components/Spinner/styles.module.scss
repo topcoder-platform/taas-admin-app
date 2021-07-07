@@ -1,43 +1,7 @@
-@import 'styles/variables';
+@import "styles/variables";
 
 .container {
-  position: relative;
-  padding-bottom: 100%;
-  width: 100%;
-  height: 0;
-  overflow: hidden;
-}
-
-.spinner {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  padding-bottom: 50%;
-  width: 50%;
-  height: 0;
-  color: transparent;
-  user-select: none;
-
-  &::after {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    border: 10px solid $control-border-color;
-    border-right-color: transparent;
-    border-radius: 9999px;
-    animation: loading-indicator 0.75s linear infinite;
-  }
-}
-
-@keyframes loading-indicator {
-  to {
-    transform: rotate(360deg);
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

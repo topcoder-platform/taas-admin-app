@@ -1,6 +1,7 @@
 import React from "react";
 import PT from "prop-types";
 import ToastMessage from "components/ToastrMessage";
+import { formatPlural } from "utils/formatters";
 import styles from "./styles.module.scss";
 
 /**
@@ -28,12 +29,14 @@ const ToastPaymentsWarning = ({
     <ToastMessage type="warning" remove={remove}>
       <div className={styles.sectionSucceeded}>
         <div className={styles.sectionTitle}>
-          Payment scheduled for {resourcesSucceededCount} resources
+          Payment scheduled for{" "}
+          {formatPlural(resourcesSucceededCount, "resource")}
         </div>
       </div>
       <div className={styles.sectionFailed}>
         <div className={styles.sectionTitle}>
-          Failed to schedule payment for {resourcesFailedCount} resources
+          Failed to schedule payment for{" "}
+          {formatPlural(resourcesFailedCount, "resource")}
           {resourcesFailed && resourcesFailed.length ? ":" : ""}
         </div>
         {resourcesFailed && resourcesFailed.length && (

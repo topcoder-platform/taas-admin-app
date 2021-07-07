@@ -1,12 +1,9 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useCallback, useRef, useState } from "react";
+import React, { useMemo } from "react";
 import PT from "prop-types";
 import cn from "classnames";
-import Popup from "components/Popup";
+import Popover from "components/Popover";
 import PaymentsList from "../PaymentsList";
-import { useClickOutside } from "utils/hooks";
 import { currencyFormatter } from "utils/formatters";
-import { negate, stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
 
 /**
@@ -27,47 +24,29 @@ const PaymentTotal = ({
   daysPaid,
   popupStrategy = "absolute",
 }) => {
-  const [isShowPopup, setIsShowPopup] = useState(false);
-  const [refElem, setRefElem] = useState(null);
-  const containerRef = useRef(null);
-
-  const onWeeklyRateClick = useCallback(() => {
-    setIsShowPopup(negate);
-  }, []);
-
-  const onClickOutside = useCallback(() => {
-    setIsShowPopup(false);
-  }, []);
-
   const hasPayments = !!payments && !!payments.length;
 
-  useClickOutside(containerRef, onClickOutside, []);
+  const paymentsList = useMemo(
+    () => (hasPayments ? <PaymentsList payments={payments} /> : null),
+    [hasPayments, payments]
+  );
 
   return (
-    <div
-      className={cn(styles.container, className)}
-      ref={containerRef}
-      onClick={hasPayments ? stopPropagation : null}
+    <Popover
+      className={className}
+      content={paymentsList}
+      stopClickPropagation={hasPayments}
+      strategy={popupStrategy}
+      targetClassName={cn(styles.paymentTotal, {
+        [styles.hasPayments]: hasPayments,
+      })}
     >
-      <span
-        className={cn(styles.paymentTotal, {
-          [styles.hasPayments]: hasPayments,
-        })}
-        onClick={onWeeklyRateClick}
-        ref={setRefElem}
-      >
-        <span className={styles.paymentTotalSum}>
-          {currencyFormatter.format(paymentTotal)}
-        </span>
-        &nbsp;
-        <span className={styles.daysPaid}>({daysPaid})</span>
+      <span className={styles.paymentTotalSum}>
+        {currencyFormatter.format(paymentTotal)}
       </span>
-      {hasPayments && isShowPopup && (
-        <Popup referenceElement={refElem} strategy={popupStrategy}>
-          <PaymentsList payments={payments} />
-        </Popup>
-      )}
-    </div>
+      &nbsp;
+      <span className={styles.daysPaid}>({daysPaid})</span>
+    </Popover>
   );
 };
 

@@ -10,6 +10,7 @@ import styles from "./styles.module.scss";
  * @param {Object} props component properties
  * @param {boolean} props.checked whether checkbox is checked
  * @param {string} [props.className] class name added to root element
+ * @param {string} [props.impostorClassName] class name added to checkbox impostor
  * @param {boolean} [props.isDisabled] if checkbox is disabled
  * @param {string} props.name name for input element
  * @param {() => void} props.onChange function called when checkbox changes state
@@ -21,6 +22,7 @@ import styles from "./styles.module.scss";
 const Checkbox = ({
   checked,
   className,
+  impostorClassName,
   isDisabled = false,
   name,
   onChange,
@@ -47,7 +49,7 @@ const Checkbox = ({
       checked={checked}
       value={option ? option.value : ""}
     />
-    <span className={styles.impostor} />
+    <span className={cn(styles.impostor, impostorClassName)} />
     {option && option.label && (
       <span className={styles.label}>{option.label}</span>
     )}
@@ -57,6 +59,7 @@ const Checkbox = ({
 Checkbox.propTypes = {
   checked: PT.bool,
   className: PT.string,
+  impostorClassName: PT.string,
   isDisabled: PT.bool,
   name: PT.string.isRequired,
   size: PT.oneOf(["medium", "small"]),

@@ -1,18 +1,25 @@
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import PT from "prop-types";
 import cn from "classnames";
 import debounce from "lodash/debounce";
 import Checkbox from "components/Checkbox";
-import IntegerField from "components/IntegerField";
+import JobName from "components/JobName";
 import ProjectName from "components/ProjectName";
+import Tooltip from "components/Tooltip";
 import PaymentError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
 import PaymentTotal from "../PaymentTotal";
+import PeriodWorkingDays from "../PeriodWorkingDays";
 import PeriodDetails from "../PeriodDetails";
-import { PAYMENT_STATUS } from "constants/workPeriods";
+import ProcessingError from "../ProcessingError";
+import {
+  PAYMENT_STATUS,
+  REASON_DISABLED_MESSAGE_MAP,
+} from "constants/workPeriods";
 import {
   setWorkPeriodWorkingDays,
+  toggleWorkingDaysUpdated,
   toggleWorkPeriod,
 } from "store/actions/workPeriods";
 import {
@@ -20,29 +27,38 @@ import {
   updateWorkPeriodWorkingDays,
 } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
-import { formatUserHandleLink, formatWeeklyRate } from "utils/formatters";
+import {
+  formatDate,
+  formatUserHandleLink,
+  formatWeeklyRate,
+} from "utils/formatters";
 import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
+import PeriodAlerts from "../PeriodAlerts";
 
 /**
  * Displays the working period data row to be used in PeriodList component.
  *
  * @param {Object} props component properties
  * @param {boolean} [props.isDisabled] whether the item is disabled
- * @param {boolean} [props.isFailed] whether the item should be highlighted as failed
  * @param {boolean} props.isSelected whether the item is selected
  * @param {Object} props.item object describing a working period
+ * @param {Array} [props.alerts] array with alert ids
  * @param {Object} props.data changeable working period data such as working days
  * @param {Object} [props.details] object with working period details
+ * @param {Object} [props.reasonFailed] error object denoting payment processing failure
+ * @param {Array} [props.reasonsDisabled] array of REASON_DISABLED values.
  * @returns {JSX.Element}
  */
 const PeriodItem = ({
   isDisabled = false,
-  isFailed = false,
   isSelected,
   item,
+  alerts,
   data,
   details,
+  reasonFailed,
+  reasonsDisabled,
 }) => {
   const dispatch = useDispatch();
 
@@ -56,6 +72,10 @@ const PeriodItem = ({
   const onToggleItemDetails = useCallback(() => {
     dispatch(toggleWorkPeriodDetails(item));
   }, [dispatch, item]);
+
+  const onWorkingDaysUpdateHintTimeout = useCallback(() => {
+    dispatch(toggleWorkingDaysUpdated(item.id, false));
+  }, [dispatch, item.id]);
 
   const onWorkingDaysChange = useCallback(
     (daysWorked) => {
@@ -80,28 +100,73 @@ const PeriodItem = ({
     updateWorkingDays(data.daysWorked);
   }, [data.daysWorked]);
 
+  const jobName = useMemo(
+    () => (
+      <span className={styles.tooltipContent}>
+        <span className={styles.tooltipLabel}>Job Name:</span>&nbsp;
+        <JobName jobId={item.jobId} />
+      </span>
+    ),
+    [item.jobId]
+  );
+
+  const projectId = useMemo(
+    () => (
+      <span className={styles.tooltipContent}>
+        <span className={styles.tooltipLabel}>Project ID:</span>&nbsp;
+        {item.projectId}
+      </span>
+    ),
+    [item.projectId]
+  );
+
+  const reasonsDisabledElement = useMemo(
+    () => (
+      <div className={styles.tooltipContent}>
+        {formatReasonsDisabled(reasonsDisabled)}
+      </div>
+    ),
+    [reasonsDisabled]
+  );
+
   return (
     <>
       <tr
         className={cn(styles.container, {
           [styles.hasDetails]: !!details,
-          [styles.isFailed]: isFailed,
+          [styles.isFailed]: !!reasonFailed,
         })}
         onClick={onToggleItemDetails}
       >
         <td className={styles.toggle}>
-          <Checkbox
-            size="small"
-            isDisabled={isDisabled}
-            checked={isSelected}
-            name={`wp_chb_${item.id}`}
-            onChange={onToggleItem}
-            option={{ value: item.id }}
-            stopClickPropagation={true}
-          />
+          <Tooltip
+            content={reasonsDisabledElement}
+            isDisabled={!reasonsDisabled}
+            strategy="fixed"
+            targetClassName={styles.checkboxContainer}
+          >
+            <Checkbox
+              className={styles.selectionCheckbox}
+              size="small"
+              isDisabled={isDisabled || !!reasonsDisabled}
+              checked={isSelected}
+              name={`wp_chb_${item.id}`}
+              onChange={onToggleItem}
+              option={{ value: item.id }}
+              stopClickPropagation={true}
+            />
+          </Tooltip>
+          <span className={styles.processingError}>
+            {reasonFailed && (
+              <ProcessingError error={reasonFailed} popupStrategy="fixed" />
+            )}
+          </span>
         </td>
         <td className={styles.userHandle}>
-          <span>
+          <Tooltip
+            content={jobName}
+            targetClassName={styles.userHandleContainer}
+          >
             <a
               href={formatUserHandleLink(item.projectId, item.rbId)}
               onClick={stopPropagation}
@@ -110,13 +175,18 @@ const PeriodItem = ({
             >
               {item.userHandle}
             </a>
-          </span>
+          </Tooltip>
         </td>
         <td className={styles.teamName}>
-          <ProjectName projectId={item.projectId} />
+          <Tooltip content={projectId}>
+            <ProjectName projectId={item.projectId} />
+          </Tooltip>
         </td>
-        <td className={styles.startDate}>{item.startDate}</td>
-        <td className={styles.endDate}>{item.endDate}</td>
+        <td className={styles.startDate}>{formatDate(item.bookingStart)}</td>
+        <td className={styles.endDate}>{formatDate(item.bookingEnd)}</td>
+        <td className={styles.alert}>
+          <PeriodAlerts alerts={alerts} />
+        </td>
         <td className={styles.weeklyRate}>
           <span>{formatWeeklyRate(item.weeklyRate)}</span>
         </td>
@@ -141,57 +211,81 @@ const PeriodItem = ({
           <PaymentStatus status={data.paymentStatus} />
         </td>
         <td className={styles.daysWorked}>
-          <IntegerField
-            className={styles.daysWorkedControl}
+          <PeriodWorkingDays
+            bookingStart={item.bookingStart}
+            bookingEnd={item.bookingEnd}
+            controlName={`wp_wrk_days_${item.id}`}
+            data={data}
             isDisabled={isDisabled}
-            name={`wp_wrk_days_${item.id}`}
-            onChange={onWorkingDaysChange}
-            maxValue={5}
-            minValue={data.daysPaid}
-            value={data.daysWorked}
+            onWorkingDaysChange={onWorkingDaysChange}
+            onWorkingDaysUpdateHintTimeout={onWorkingDaysUpdateHintTimeout}
+            updateHintTimeout={2000}
           />
         </td>
       </tr>
       {details && (
         <PeriodDetails
+          className={styles.periodDetails}
+          period={item}
           details={details}
           isDisabled={isDisabled}
-          isFailed={isFailed}
+          isFailed={!!reasonFailed}
         />
       )}
     </>
   );
 };
 
+/**
+ * Returns a string produced by concatenation of all provided reasons some
+ * working period is disabled.
+ *
+ * @param {Array} reasonIds array of REASON_DISABLED values
+ * @returns {any}
+ */
+function formatReasonsDisabled(reasonIds) {
+  if (!reasonIds) {
+    return null;
+  }
+  if (reasonIds.length === 1) {
+    return REASON_DISABLED_MESSAGE_MAP[reasonIds[0]];
+  }
+  const reasons = [];
+  for (let i = 0, len = reasonIds.length; i < len; i++) {
+    let reasonId = reasonIds[i];
+    reasons.push(
+      <li key={reasonId}>{REASON_DISABLED_MESSAGE_MAP[reasonId]}</li>
+    );
+  }
+  return <ul>{reasons}</ul>;
+}
+
 PeriodItem.propTypes = {
   className: PT.string,
   isDisabled: PT.bool,
-  isFailed: PT.bool,
   isSelected: PT.bool.isRequired,
   item: PT.shape({
     id: PT.oneOfType([PT.number, PT.string]).isRequired,
+    jobId: PT.string,
     rbId: PT.string.isRequired,
+    billingAccountId: PT.number.isRequired,
     projectId: PT.oneOfType([PT.number, PT.string]).isRequired,
     userHandle: PT.string.isRequired,
     teamName: PT.oneOfType([PT.number, PT.string]).isRequired,
-    startDate: PT.string.isRequired,
-    endDate: PT.string.isRequired,
+    bookingStart: PT.string.isRequired,
+    bookingEnd: PT.string.isRequired,
     weeklyRate: PT.number,
   }).isRequired,
+  alerts: PT.arrayOf(PT.string),
   data: PT.shape({
-    daysWorked: PT.number.isRequired,
     daysPaid: PT.number.isRequired,
+    daysWorked: PT.number.isRequired,
     paymentErrorLast: PT.object,
     payments: PT.array,
     paymentStatus: PT.string.isRequired,
     paymentTotal: PT.number.isRequired,
   }).isRequired,
   details: PT.shape({
-    periodId: PT.string.isRequired,
-    rbId: PT.string.isRequired,
-    jobName: PT.string.isRequired,
-    jobNameIsLoading: PT.bool.isRequired,
-    billingAccountId: PT.number.isRequired,
     billingAccounts: PT.arrayOf(
       PT.shape({
         label: PT.string.isRequired,
@@ -202,6 +296,8 @@ PeriodItem.propTypes = {
     periods: PT.array.isRequired,
     periodsIsLoading: PT.bool.isRequired,
   }),
+  reasonFailed: PT.object,
+  reasonsDisabled: PT.arrayOf(PT.string),
 };
 
 export default memo(PeriodItem);

@@ -15,7 +15,13 @@ import styles from "./styles.module.scss";
  * @param {Object} props component properties
  * @returns {JSX.Element}
  */
-const PeriodsHistory = ({ className, isDisabled, periods }) => {
+const PeriodsHistory = ({
+  bookingStart,
+  bookingEnd,
+  className,
+  isDisabled,
+  periods,
+}) => {
   const [periodsData] = useSelector(getWorkPeriodsData);
   const [startDate] = useSelector(getWorkPeriodsDateRange);
   return (
@@ -25,6 +31,8 @@ const PeriodsHistory = ({ className, isDisabled, periods }) => {
           {periods.map((period) => (
             <PeriodHistoryItem
               key={period.id}
+              bookingStart={bookingStart}
+              bookingEnd={bookingEnd}
               isDisabled={isDisabled}
               item={period}
               data={periodsData[period.id]}
@@ -38,6 +46,8 @@ const PeriodsHistory = ({ className, isDisabled, periods }) => {
 };
 
 PeriodsHistory.propTypes = {
+  bookingStart: PT.string.isRequired,
+  bookingEnd: PT.string.isRequired,
   className: PT.string,
   isDisabled: PT.bool.isRequired,
   periods: PT.arrayOf(PT.object),

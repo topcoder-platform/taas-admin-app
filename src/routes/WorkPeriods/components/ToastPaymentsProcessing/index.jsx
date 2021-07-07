@@ -1,6 +1,7 @@
 import React from "react";
 import PT from "prop-types";
 import ToastMessage from "components/ToastrMessage";
+import { formatPlural } from "utils/formatters";
 import styles from "./styles.module.scss";
 
 /**
@@ -14,7 +15,7 @@ const ToastPaymentsProcessing = ({ resourceCount, remove }) => {
   return (
     <ToastMessage className={styles.container} remove={remove}>
       <span className={styles.icon}></span>
-      Payment in progress for {resourceCount} resources
+      Payment in progress for {formatPlural(resourceCount, "resource")}
     </ToastMessage>
   );
 };

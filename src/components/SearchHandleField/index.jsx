@@ -102,6 +102,7 @@ const SearchHandleField = ({
         setIsMenuFocused(false);
         setIsMenuOpen(false);
         setIsLoading(false);
+        setInputValue(option.value);
         onChange(option.value);
       }
     } else if (action === "clear") {
@@ -109,6 +110,7 @@ const SearchHandleField = ({
       setIsMenuFocused(false);
       setIsMenuOpen(false);
       setIsLoading(false);
+      setInputValue("");
       onChange("");
     }
   };
@@ -128,7 +130,7 @@ const SearchHandleField = ({
   const onKeyDown = (event) => {
     const key = event.key;
     if (key === "Enter" || key === "Escape") {
-      if (!isMenuFocused || isLoading) {
+      if (!isMenuFocused) {
         isChangeAppliedRef.current = true;
         setIsMenuFocused(false);
         setIsMenuOpen(false);
@@ -159,14 +161,15 @@ const SearchHandleField = ({
   const loadOptions = useCallback(
     throttle(
       async (value) => {
+        if (isChangeAppliedRef.current) {
+          return;
+        }
+        setIsLoading(true);
+        const options = await loadSuggestions(value);
         if (!isChangeAppliedRef.current) {
-          setIsLoading(true);
-          const options = await loadSuggestions(value);
-          if (!isChangeAppliedRef.current) {
-            setOptions(options);
-            setIsLoading(false);
-            setIsMenuOpen(true);
-          }
+          setOptions(options);
+          setIsLoading(false);
+          setIsMenuOpen(true);
         }
       },
       300,
@@ -227,7 +230,7 @@ const loadSuggestions = async (inputValue) => {
   }
   try {
     const res = await getMemberSuggestions(inputValue);
-    const users = res.data.result.content.slice(0, 100);
+    const users = res.data.slice(0, 100);
     let match = null;
     for (let i = 0, len = users.length; i < len; i++) {
       let value = users[i].handle;

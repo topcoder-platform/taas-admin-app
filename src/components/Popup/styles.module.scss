@@ -7,7 +7,7 @@
   background: #fff;
   box-shadow: $popover-box-shadow;
 
-  :global(.popup-arrow) {
+  .popupArrow {
     display: none;
   }
 }

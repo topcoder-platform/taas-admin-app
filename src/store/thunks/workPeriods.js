@@ -9,11 +9,9 @@ import {
   DATE_FORMAT_API,
   PAYMENT_STATUS_MAP,
   API_FIELDS_QUERY,
-  JOB_NAME_NONE,
   API_CHALLENGE_PAYMENT_STATUS,
 } from "constants/workPeriods";
 import {
-  extractJobName,
   extractResponseData,
   extractResponsePagination,
   replaceItems,
@@ -33,6 +31,46 @@ import {
   makeToastPaymentsError,
 } from "routes/WorkPeriods/utils/toasts";
 import { RESOURCE_BOOKING_STATUS, WORK_PERIODS_PATH } from "constants/index.js";
+import { currencyFormatter } from "utils/formatters";
+
+export const loadWorkPeriodAfterPaymentCancel =
+  (periodId, paymentId) => async (dispatch, getState) => {
+    let [periodsData] = selectors.getWorkPeriodsData(getState());
+    periodsData[periodId]?.cancelSource?.cancel();
+    const [promise, source] = services.fetchWorkPeriod(periodId);
+    dispatch(actions.setWorkPeriodDataPending(periodId, source));
+    let periodData = null;
+    let userHandle = null;
+    let errorMessage = null;
+    try {
+      const data = await promise;
+      periodData = normalizePeriodData(data);
+      userHandle = data.userHandle;
+    } catch (error) {
+      if (!axios.isCancel(error)) {
+        errorMessage = error.toString();
+      }
+    }
+    if (periodData) {
+      let amount = null;
+      for (let payment of periodData.payments) {
+        if (payment.id === paymentId) {
+          amount = currencyFormatter.format(payment.amount);
+          break;
+        }
+      }
+      dispatch(actions.setWorkPeriodDataSuccess(periodId, periodData));
+      makeToast(
+        `Payment ${amount} for ${userHandle} was marked as "cancelled"`,
+        "success"
+      );
+    } else if (errorMessage) {
+      dispatch(actions.setWorkPeriodDataError(periodId, errorMessage));
+      makeToast(
+        `Failed to load data for working period ${periodId}.\n` + errorMessage
+      );
+    }
+  };
 
 /**
  * Thunk that loads the specified working periods' page. If page number is not
@@ -150,30 +188,7 @@ export const toggleWorkPeriodDetails =
         // reload details?
       } else {
         const source = axios.CancelToken.source();
-        dispatch(
-          actions.loadWorkPeriodDetailsPending(
-            period.id,
-            period.rbId,
-            period.billingAccountId,
-            source
-          )
-        );
-
-        if (period.jobId) {
-          const [jobNamePromise] = services.fetchJob(period.jobId, source);
-          jobNamePromise
-            .then((data) => {
-              const jobName = extractJobName(data);
-              dispatch(actions.loadJobNameSuccess(period.id, jobName));
-            })
-            .catch((error) => {
-              if (!axios.isCancel(error)) {
-                dispatch(actions.loadJobNameError(period.id, error.toString()));
-              }
-            });
-        } else {
-          dispatch(actions.loadJobNameSuccess(period.id, JOB_NAME_NONE));
-        }
+        dispatch(actions.loadWorkPeriodDetailsPending(period, source));
 
         const [bilAccsPromise] = services.fetchBillingAccounts(
           period.projectId,
@@ -181,18 +196,13 @@ export const toggleWorkPeriodDetails =
         );
         bilAccsPromise
           .then((data) => {
-            const periodsDetails = selectors.getWorkPeriodsDetails(getState());
-            const periodDetails = periodsDetails[period.id];
-            const billingAccountId =
-              (periodDetails && periodDetails.billingAccountId) ||
-              period.billingAccountId;
-            const accounts = normalizeBillingAccounts(data, billingAccountId);
-            dispatch(actions.loadBillingAccountsSuccess(period.id, accounts));
+            const accounts = normalizeBillingAccounts(data);
+            dispatch(actions.loadBillingAccountsSuccess(period, accounts));
           })
           .catch((error) => {
             if (!axios.isCancel(error)) {
               dispatch(
-                actions.loadBillingAccountsError(period.id, error.toString())
+                actions.loadBillingAccountsError(period, error.toString())
               );
             }
           });
@@ -256,7 +266,7 @@ export const updateWorkPeriodWorkingDays =
       periodId,
       daysWorked
     );
-    dispatch(actions.setWorkPeriodDataPending(periodId, source));
+    dispatch(actions.setWorkPeriodWorkingDaysPending(periodId, source));
     let periodData = null;
     let errorMessage = null;
     try {
@@ -280,9 +290,9 @@ export const updateWorkPeriodWorkingDays =
     // and there will be a new request at the end of which the period's data
     // will be updated so again we don't need to update the state.
     if (periodData && periodData.daysWorked === currentDaysWorked) {
-      dispatch(actions.setWorkPeriodDataSuccess(periodId, periodData));
+      dispatch(actions.setWorkPeriodWorkingDaysSuccess(periodId, periodData));
     } else if (errorMessage) {
-      dispatch(actions.setWorkPeriodDataError(periodId, errorMessage));
+      dispatch(actions.setWorkPeriodWorkingDaysError(periodId, errorMessage));
     }
   };
 
@@ -293,16 +303,26 @@ export const updateWorkPeriodWorkingDays =
  * @param {function} getState function returning redux store root state
  */
 export const processPayments = async (dispatch, getState) => {
-  dispatch(actions.toggleWorkPeriodsProcessingPeyments(true));
   const state = getState();
+  const isProcessing = selectors.getWorkPeriodsIsProcessingPayments(state);
+  if (isProcessing) {
+    return;
+  }
+  dispatch(actions.toggleWorkPeriodsProcessingPayments(true));
   const isSelectedAll = selectors.getWorkPeriodsIsSelectedAll(state);
   const { pageSize, totalCount } = selectors.getWorkPeriodsPagination(state);
-  if (isSelectedAll && totalCount > pageSize) {
-    processPaymentsAll(dispatch, getState);
-  } else {
-    processPaymentsSpecific(dispatch, getState);
+  const promise =
+    isSelectedAll && totalCount > pageSize
+      ? processPaymentsAll(dispatch, getState)
+      : processPaymentsSpecific(dispatch, getState);
+  // The promise returned by processPaymentsAll or processPaymentsSpecific
+  // should never be rejected but adding try-catch block just in case.
+  try {
+    await promise;
+  } catch (error) {
+    console.error(error);
   }
-  dispatch(actions.toggleWorkPeriodsProcessingPeyments(false));
+  dispatch(actions.toggleWorkPeriodsProcessingPayments(false));
 };
 
 const processPaymentsAll = async (dispatch, getState) => {
@@ -352,13 +372,10 @@ const processPaymentsAll = async (dispatch, getState) => {
 
 const processPaymentsSpecific = async (dispatch, getState) => {
   const state = getState();
-  const periods = selectors.getWorkPeriods(state);
-  const periodsSelected = selectors.getWorkPeriodsSelected(state);
+  const [periodsSelectedSet] = selectors.getWorkPeriodsSelected(state);
   const payments = [];
-  for (let period of periods) {
-    if (period.id in periodsSelected) {
-      payments.push({ workPeriodId: period.id });
-    }
+  for (let workPeriodId of periodsSelectedSet) {
+    payments.push({ workPeriodId });
   }
   makeToastPaymentsProcessing(payments.length);
   let results = null;
@@ -373,9 +390,9 @@ const processPaymentsSpecific = async (dispatch, getState) => {
     const resourcesSucceeded = [];
     const resourcesFailed = [];
     for (let result of results) {
-      let isFailed = "error" in result;
-      periodsToHighlight[result.workPeriodId] = isFailed;
-      if (isFailed) {
+      let error = result.error;
+      periodsToHighlight[result.workPeriodId] = error;
+      if (error) {
         resourcesFailed.push(result);
       } else {
         resourcesSucceeded.push(result);
@@ -387,7 +404,6 @@ const processPaymentsSpecific = async (dispatch, getState) => {
       if (resourcesFailed.length) {
         makeToastPaymentsWarning({
           resourcesSucceededCount: resourcesSucceeded.length,
-          resourcesFailed,
           resourcesFailedCount: resourcesFailed.length,
         });
       } else {

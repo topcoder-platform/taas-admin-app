@@ -1,0 +1,40 @@
+@import "styles/mixins";
+@import "styles/variables";
+
+.container {
+  display: inline-block;
+
+  &.hasAlerts {
+    border-radius: 5px;
+    padding: 3px 5px 1px;
+    height: 20px;
+    max-width: 15em;
+    line-height: 16px;
+    font-size: 11px;
+    @include roboto-medium;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: #ffc43d;
+
+    &::before {
+      content: "!";
+      display: inline-block;
+      margin-right: 4px;
+      border: 2px solid $text-color;
+      border-radius: 7px;
+      padding: 1px 0 0;
+      width: 13px;
+      height: 13px;
+      line-height: 8px;
+      font-size: 10px;
+      @include roboto-bold;
+      text-align: center;
+    }
+  }
+}
+
+.tooltip {
+  white-space: nowrap;
+}

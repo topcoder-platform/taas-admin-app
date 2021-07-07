@@ -1,6 +1,6 @@
 import moment from "moment";
 import isNumber from "lodash/isNumber";
-import { PAYMENT_STATUS_LABELS } from "constants/workPeriods";
+import { DATE_FORMAT_UI, PAYMENT_STATUS_LABELS } from "constants/workPeriods";
 import {
   PLATFORM_WEBSITE_URL,
   TAAS_BASE_PATH,
@@ -17,6 +17,16 @@ const rxWhitespace = /\s+/;
  */
 export function formatChallengeUrl(challengeId) {
   return `${TOPCODER_WEBSITE_URL}/challenges/${challengeId}`;
+}
+
+/**
+ * Returns formatted date for working period rows.
+ *
+ * @param {any} date any value accepted by MomentJS
+ * @returns {string}
+ */
+export function formatDate(date) {
+  return date ? moment(date).format(DATE_FORMAT_UI) : "-";
 }
 
 /**
@@ -69,6 +79,28 @@ export function formatPaymentStatus(status) {
     paymentStatus = words.join(" ");
   }
   return paymentStatus;
+}
+
+/**
+ * Creates the string with the number of items and the word describing the item
+ * possibly in plural form.
+ *
+ * @param {number} count number of items
+ * @param {string} baseWord word describing the item
+ * @returns {string}
+ */
+export function formatPlural(count, baseWord) {
+  return `${count} ${baseWord}${count > 1 ? "s" : ""}`;
+}
+
+/**
+ * Returns "is" or "are" for singular/plural phrases.
+ *
+ * @param {number} count
+ * @returns {string} "is" or "are"
+ */
+export function formatIsAre(count) {
+  return count > 1 ? "are" : "is";
 }
 
 /**

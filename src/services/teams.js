@@ -9,5 +9,5 @@ import config from "../../config";
  * @returns {Promise}
  */
 export const getMemberSuggestions = (fragment) => {
-  return axios.get(`${config.API.V3}/members/_suggest/${fragment}`);
+  return axios.get(`${config.API.V5}/taas-teams/members-suggest/${fragment}`);
 };

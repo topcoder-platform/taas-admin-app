@@ -20,28 +20,25 @@ import styles from "./styles.module.scss";
  * @returns {JSX.Element}
  */
 const WorkPeriods = () => (
-  <Page className={styles.container}>
+  <Page>
     <Sidebar>
       <PeriodFilters />
     </Sidebar>
     <Content>
       <PeriodsContentHeader />
-      <ContentBlock className={styles.periodsBlock}>
+      <ContentBlock>
         <div className={styles.periodsHeader}>
           <PeriodCount className={styles.periodCount} />
           <PeriodWeekPicker className={styles.periodWeekPicker} />
           <PeriodsPagination
-            className={styles.periodsPagination}
+            className={styles.periodsPaginationTop}
             id="periods-pagination-top"
           />
         </div>
         <PeriodsSelectionMessage />
         <Periods />
         <div className={styles.periodsFooter}>
-          <PeriodsPagination
-            className={styles.periodPagination}
-            id="periods-pagination-bottom"
-          />
+          <PeriodsPagination id="periods-pagination-bottom" />
         </div>
       </ContentBlock>
     </Content>

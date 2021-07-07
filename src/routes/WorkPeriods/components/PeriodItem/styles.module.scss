@@ -1,10 +1,10 @@
 @import "styles/mixins";
 @import "styles/variables";
 
-tr.container {
+.container {
   > td {
-    padding-left: 17px;
-    padding-right: 17px;
+    padding-left: 15px;
+    padding-right: 15px;
     background: #fff;
   }
 
@@ -40,9 +40,35 @@ tr.container {
   }
 }
 
+.periodDetails {
+  + .container.hasDetails {
+    > td {
+      &.toggle {
+        padding-top: 12px;
+      }
+
+      &.daysWorked {
+        padding-top: 5px;
+      }
+    }
+  }
+}
+
 td.toggle {
-  padding: 12px 20px 12px 15px;
+  padding: 12px 18px 12px 15px;
   line-height: 15px;
+  white-space: nowrap;
+}
+
+.selectionCheckbox {
+  display: inline-block;
+}
+
+.processingError {
+  display: inline-block;
+  position: absolute;
+  margin-left: 10px;
+  width: 15px;
 }
 
 .userHandle {
@@ -50,14 +76,14 @@ td.toggle {
     @include roboto-bold;
     color: #0d61bf;
   }
+}
 
-  span {
-    display: block;
-    max-width: 20em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+.userHandleContainer {
+  display: inline-block;
+  max-width: 20em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 td.teamName {
@@ -67,6 +93,8 @@ td.teamName {
 
 td.startDate,
 td.endDate {
+  padding-left: 10px;
+  padding-right: 10px;
   white-space: nowrap;
 }
 
@@ -91,6 +119,13 @@ td.daysWorked {
   padding: 5px 10px;
 }
 
-.daysWorkedControl {
-  width: 100px;
+.tooltipContent {
+  white-space: nowrap;
+  font-weight: 400;
+}
+
+.tooltipLabel {
+  margin-right: 5px;
+  white-space: nowrap;
+  font-weight: 500;
 }

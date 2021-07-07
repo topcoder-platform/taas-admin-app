@@ -1,0 +1,22 @@
+@import "styles/mixins";
+@import "styles/variables";
+
+.icon {
+  display: inline-block;
+  padding: 2px 0 0;
+  font-size: 12px;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  line-height: 14px;
+  @include roboto-bold;
+  text-align: center;
+  background: $error-color;
+  color: #fff;
+  cursor: pointer;
+
+  &::before {
+    content: "!";
+    display: inline;
+  }
+}

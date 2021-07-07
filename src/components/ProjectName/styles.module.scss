@@ -1,7 +1,7 @@
 @import "styles/mixins";
 
 .container {
-  display: block;
+  display: inline-block;
   max-width: 20em;
   overflow: hidden;
   text-overflow: ellipsis;

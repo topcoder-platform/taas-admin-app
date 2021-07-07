@@ -3,26 +3,30 @@ import { useEffect, useRef } from "react";
 /**
  * By "click" it is implied "mousedown" or "touchstart"
  *
- * @param {Object} ref element reference obtained with useRef
+ * @param {Object} element HTML element
  * @param {function} listener function with stable identity
  * that will be executed on click outside
  * @param {Array} deps dependencies
  * when click happens outside the element referred by ref
  */
-export const useClickOutside = (ref, listener, deps) => {
+export const useClickOutside = (element, listener, deps) => {
   useEffect(() => {
-    const onClick = (event) => {
-      let elem = ref.current;
-      if (elem && !elem.contains(event.target)) {
-        listener();
+    let onClick = null;
+    if (element && listener) {
+      onClick = (event) => {
+        if (!element.contains(event.target)) {
+          listener();
+        }
+      };
+      document.addEventListener("click", onClick);
+    }
+    return () => {
+      if (onClick) {
+        document.removeEventListener("click", onClick);
       }
     };
-    document.addEventListener("click", onClick);
-    return () => {
-      document.removeEventListener("click", onClick);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listener, ...deps]);
+  }, [element, listener, ...deps]);
 };
 
 /**

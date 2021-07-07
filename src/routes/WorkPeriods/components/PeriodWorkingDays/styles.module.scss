@@ -1,0 +1,144 @@
+@import "styles/variables";
+
+.container {
+  display: flex;
+  align-items: baseline;
+}
+
+.iconPlaceholder {
+  align-self: center;
+  margin-right: 10px;
+  width: 30px;
+  height: 30px;
+}
+
+.checkmarkIcon {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.daysWorkedControl {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid $control-border-color;
+  border-radius: 6px;
+  width: 100px;
+  overflow: hidden;
+}
+
+input.input {
+  flex: 1 1 0;
+  margin: 0;
+  border: none !important;
+  padding: 3px 0;
+  height: 28px;
+  line-height: 22px;
+  background: #fff;
+  outline: none !important;
+  box-shadow: none !important;
+  text-align: center;
+
+  &:disabled {
+    border-color: $control-disabled-border-color;
+    background-color: $control-disabled-bg-color;
+    color: $control-disabled-text-color;
+    cursor: not-allowed;
+
+    ~ .btnMinus,
+    ~ .btnPlus {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.tooltip {
+  max-width: 400px;
+}
+
+.tooltipTarget {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  &.notAllowed {
+    cursor: not-allowed;
+  }
+}
+
+.btnMinus,
+.btnPlus {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 30px;
+  height: 30px;
+
+  button {
+    display: block;
+    position: relative;
+    border: none;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    outline: none !important;
+    cursor: pointer;
+
+    &:disabled {
+      background: #ddd;
+      opacity: 1;
+    }
+  }
+}
+
+.btnMinus {
+  left: 0;
+
+  button {
+    &::before {
+      content: "";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      width: 8px;
+      height: 1px;
+      background: #7f7f7f;
+    }
+  }
+}
+
+.btnPlus {
+  right: 0;
+
+  button {
+    &::before,
+    &::after {
+      content: "";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      background: #7f7f7f;
+    }
+
+    &::before {
+      width: 9px;
+      height: 1px;
+    }
+
+    &::after {
+      width: 1px;
+      height: 9px;
+    }
+  }
+}

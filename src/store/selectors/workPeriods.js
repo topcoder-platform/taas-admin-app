@@ -15,6 +15,14 @@ export const getWorkPeriodsStateSlice = (state) => state.workPeriods;
 export const getWorkPeriods = (state) => state.workPeriods.periods;
 
 /**
+ * Returns an object with period ids as keys and alerts' arrays as values;
+ *
+ * @param {Object} state redux root state
+ * @returns {Object}
+ */
+export const getWorkPeriodsAlerts = (state) => state.workPeriods.periodsAlerts;
+
+/**
  * Returns working periods' details.
  *
  * @param {Object} state redux root state
@@ -22,6 +30,16 @@ export const getWorkPeriods = (state) => state.workPeriods.periods;
  */
 export const getWorkPeriodsDetails = (state) =>
   state.workPeriods.periodsDetails;
+
+/**
+ * Returns a Map wrapped in an array containing arrays of reasons the specific
+ * working period is disabled.
+ *
+ * @param {Object} state redux root state
+ * @returns {[Map]}
+ */
+export const getWorkPeriodsDisabled = (state) =>
+  state.workPeriods.periodsDisabled;
 
 /**
  * Returns an object which has working periods' ids for which the payments
@@ -33,14 +51,16 @@ export const getWorkPeriodsDetails = (state) =>
 export const getWorkPeriodsFailed = (state) => state.workPeriods.periodsFailed;
 
 /**
- * Returns an object with working periods' ids as keys and booleans showing
- * whether the period is selected as values.
+ * Returns a Set wrapped in array containing the ids of selected working periods.
  *
  * @param {Object} state redux root state
- * @returns {Object.<string, boolean>}
+ * @returns {[Set]}
  */
 export const getWorkPeriodsSelected = (state) =>
   state.workPeriods.periodsSelected;
+
+export const getWorkPeriodsSelectedCount = (state) =>
+  state.workPeriods.periodsSelected[0].size;
 
 /**
  * Returns working periods filters' state.
@@ -68,11 +88,6 @@ export const getWorkPeriodsPageNumber = (state) =>
 export const getWorkPeriodsPageSize = (state) =>
   state.workPeriods.pagination.pageSize;
 
-export const getWorkPeriodsUrlQuery = (state) => state.workPeriods.query;
-
-export const getWorkPeriodsIsQueryFromState = (state) =>
-  state.workPeriods.isQueryFromState;
-
 export const getWorkPeriodsCount = (state) => state.workPeriods.periods.length;
 
 export const getWorkPeriodsData = (state) => state.workPeriods.periodsData;
@@ -80,13 +95,8 @@ export const getWorkPeriodsData = (state) => state.workPeriods.periodsData;
 export const getWorkPeriodsTotalCount = (state) =>
   state.workPeriods.pagination.totalCount;
 
-export const getWorkPeriodsHasSelectedItems = (state) => {
-  const periodsSelected = state.workPeriods.periodsSelected;
-  for (let id in periodsSelected) {
-    return true;
-  }
-  return false;
-};
+export const getWorkPeriodsHasSelectedItems = (state) =>
+  !!state.workPeriods.periodsSelected[0].size;
 
 export const getWorkPeriodsIsLoading = (state) =>
   !!state.workPeriods.cancelSource;

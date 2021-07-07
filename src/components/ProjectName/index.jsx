@@ -1,7 +1,7 @@
 import React, { memo, useContext, useEffect } from "react";
 import PT from "prop-types";
 import cn from "classnames";
-import { ProjectNameContext } from "components/ProjectNameContextProvider";
+import { ProjectNameContext } from "components/ProjectNameProvider";
 import styles from "./styles.module.scss";
 
 const ProjectName = ({ className, projectId }) => {

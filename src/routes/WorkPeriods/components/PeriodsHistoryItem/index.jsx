@@ -3,16 +3,22 @@ import { useDispatch } from "react-redux";
 import PT from "prop-types";
 import cn from "classnames";
 import debounce from "lodash/debounce";
-import moment from "moment";
-import IntegerField from "components/IntegerField";
-import PaymentError from "../PaymentError";
+import ProcessingError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
 import PaymentTotal from "../PaymentTotal";
+import PeriodWorkingDays from "../PeriodWorkingDays";
 import { PAYMENT_STATUS } from "constants/workPeriods";
-import { setDetailsWorkingDays } from "store/actions/workPeriods";
+import {
+  setDetailsWorkingDays,
+  toggleWorkingDaysUpdated,
+} from "store/actions/workPeriods";
 import { updateWorkPeriodWorkingDays } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
-import { formatDateLabel, formatDateRange } from "utils/formatters";
+import {
+  formatDateLabel,
+  formatDateRange,
+  formatPlural,
+} from "utils/formatters";
 import styles from "./styles.module.scss";
 
 /**
@@ -21,12 +27,19 @@ import styles from "./styles.module.scss";
  * @param {Object} props component properties
  * @returns {JSX.Element}
  */
-const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
+const PeriodsHistoryItem = ({
+  bookingStart,
+  bookingEnd,
+  isDisabled,
+  item,
+  data,
+  currentStartDate,
+}) => {
   const dispatch = useDispatch();
 
-  const dateLabel = formatDateLabel(item.startDate, currentStartDate);
+  const dateLabel = formatDateLabel(item.start, currentStartDate);
   const daysWorked = data.daysWorked;
-  const isCurrent = moment(item.startDate).isSame(currentStartDate, "date");
+  const isCurrent = item.start.isSame(currentStartDate, "date");
 
   const onWorkingDaysChange = useCallback(
     (daysWorked) => {
@@ -34,6 +47,10 @@ const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
     },
     [dispatch, item.id]
   );
+
+  const onWorkingDaysUpdateHintTimeout = useCallback(() => {
+    dispatch(toggleWorkingDaysUpdated(item.id, false));
+  }, [dispatch, item.id]);
 
   const updateWorkingDays = useCallback(
     debounce(
@@ -49,9 +66,9 @@ const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
   // Update working days on server if working days change.
   useUpdateEffect(() => {
     if (!isCurrent) {
-      updateWorkingDays(data.daysWorked);
+      updateWorkingDays(daysWorked);
     }
-  }, [data.daysWorked, isCurrent]);
+  }, [daysWorked, isCurrent]);
 
   return (
     <tr
@@ -60,12 +77,12 @@ const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
       })}
     >
       <td className={styles.dateRange}>
-        {formatDateRange(item.startDate, item.endDate)}
+        {formatDateRange(item.start, item.end)}
       </td>
       <td className={styles.dateLabel}>{dateLabel}</td>
       <td className={styles.paymentTotal}>
         {data.paymentErrorLast && (
-          <PaymentError
+          <ProcessingError
             className={styles.paymentError}
             errorDetails={data.paymentErrorLast}
             isImportant={data.paymentStatus !== PAYMENT_STATUS.COMPLETED}
@@ -83,16 +100,19 @@ const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
       </td>
       <td className={styles.daysWorked}>
         {data.paymentStatus === PAYMENT_STATUS.COMPLETED ? (
-          `${daysWorked} ${daysWorked === 1 ? "Day" : "Days"}`
+          <span className={styles.daysWorkedLabel}>
+            {formatPlural(daysWorked, "Day")}
+          </span>
         ) : (
-          <IntegerField
-            className={styles.daysWorkedControl}
-            name={`wp_det_wd_${item.id}`}
+          <PeriodWorkingDays
+            bookingStart={bookingStart}
+            bookingEnd={bookingEnd}
+            controlName={`wp_det_wd_${item.id}`}
+            data={data}
             isDisabled={isDisabled}
-            onChange={onWorkingDaysChange}
-            value={daysWorked}
-            maxValue={5}
-            minValue={data.daysPaid}
+            onWorkingDaysChange={onWorkingDaysChange}
+            onWorkingDaysUpdateHintTimeout={onWorkingDaysUpdateHintTimeout}
+            updateHintTimeout={2000}
           />
         )}
       </td>
@@ -104,18 +124,20 @@ PeriodsHistoryItem.propTypes = {
   isDisabled: PT.bool.isRequired,
   item: PT.shape({
     id: PT.string.isRequired,
-    startDate: PT.oneOfType([PT.string, PT.number]).isRequired,
-    endDate: PT.oneOfType([PT.string, PT.number]).isRequired,
+    start: PT.object.isRequired,
+    end: PT.object.isRequired,
     weeklyRate: PT.number,
   }).isRequired,
   data: PT.shape({
-    daysWorked: PT.number.isRequired,
     daysPaid: PT.number.isRequired,
+    daysWorked: PT.number.isRequired,
     paymentErrorLast: PT.object,
     payments: PT.array,
     paymentStatus: PT.string.isRequired,
     paymentTotal: PT.number.isRequired,
   }).isRequired,
+  bookingStart: PT.string.isRequired,
+  bookingEnd: PT.string.isRequired,
   currentStartDate: PT.oneOfType([PT.string, PT.number, PT.object]).isRequired,
 };
 

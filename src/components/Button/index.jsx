@@ -9,11 +9,12 @@ import styles from "./styles.module.scss";
  * @param {Object} props component properties
  * @param {Object} props.children button text
  * @param {string} [props.className] class name added to root element
- * @param {'primary'|'primary-dark'|'primary-light'} [props.color] button color
+ * @param {'primary'|'primary-dark'|'primary-light'|'error'|'warning'} [props.color]
+ * button color
  * @param {boolean} [props.isDisabled] if button is disabled
  * @param {boolean} [props.isSelected] if button is selected
  * @param {string} [props.name] button name
- * @param {(e: any) => void} props.onClick function called when button is clicked
+ * @param {(e: any) => void} [props.onClick] function called when button is clicked
  * @param {'medium'|'small'} [props.size] button size
  * @param {'circle'|'rounded'} [props.style] button style
  * @param {'button'|'submit'|'reset'} [props.type] button type
@@ -42,13 +43,11 @@ const Button = ({
     type={type}
     className={cn(
       styles.button,
-      {
-        [styles.selected]: isSelected,
-        [styles[color]]: true,
-        [styles[size]]: true,
-        [styles[style]]: true,
-        [styles[variant]]: true,
-      },
+      styles[color],
+      styles[size],
+      styles[style],
+      styles[variant],
+      { [styles.selected]: isSelected },
       className
     )}
     onClick={onClick}
@@ -60,7 +59,13 @@ const Button = ({
 Button.propTypes = {
   children: PT.node,
   className: PT.string,
-  color: PT.oneOf(["primary"]),
+  color: PT.oneOf([
+    "primary",
+    "primary-dark",
+    "primary-light",
+    "error",
+    "warning",
+  ]),
   isDisabled: PT.bool,
   isSelected: PT.bool,
   name: PT.string,

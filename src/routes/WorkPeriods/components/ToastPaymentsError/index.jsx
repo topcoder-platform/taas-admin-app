@@ -1,6 +1,7 @@
 import React from "react";
 import PT from "prop-types";
 import ToastMessage from "components/ToastrMessage";
+import { formatPlural } from "utils/formatters";
 
 /**
  * Displays a toastr message with info about the number of resources payments
@@ -12,7 +13,7 @@ import ToastMessage from "components/ToastrMessage";
 const ToastPaymentsError = ({ resourceCount, remove }) => {
   return (
     <ToastMessage type="error" remove={remove}>
-      Failed to schedule payments for {resourceCount} resources
+      Failed to schedule payment for {formatPlural(resourceCount, "resource")}
     </ToastMessage>
   );
 };

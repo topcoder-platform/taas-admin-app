@@ -1,10 +1,9 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useMemo } from "react";
 import PT from "prop-types";
 import cn from "classnames";
-import Popup from "components/Popup";
+import Popover from "components/Popover";
+import IconExclamationMark from "components/Icons/ExclamationMarkCircled";
 import PaymentErrorDetails from "../PaymentErrorDetails";
-import { useClickOutside } from "utils/hooks";
-import { negate } from "utils/misc";
 import styles from "./styles.module.scss";
 
 /**
@@ -23,36 +22,21 @@ const PaymentError = ({
   isImportant = true,
   popupStrategy = "absolute",
 }) => {
-  const [isShowPopup, setIsShowPopup] = useState(false);
-  const [refElem, setRefElem] = useState(null);
-  const containerRef = useRef(null);
-
-  const onIconClick = useCallback((event) => {
-    event.stopPropagation();
-    setIsShowPopup(negate);
-  }, []);
-
-  const onClickOutside = useCallback(() => {
-    setIsShowPopup(false);
-  }, []);
-
-  useClickOutside(containerRef, onClickOutside, []);
-
+  const paymentErrorDetails = useMemo(
+    () => <PaymentErrorDetails details={errorDetails} />,
+    [errorDetails]
+  );
   return (
-    <div className={cn(styles.container, className)} ref={containerRef}>
-      <span
-        ref={setRefElem}
+    <Popover
+      className={className}
+      content={paymentErrorDetails}
+      stopClickPropagation={true}
+      strategy={popupStrategy}
+    >
+      <IconExclamationMark
         className={cn(styles.icon, { [styles.isImportant]: isImportant })}
-        onClick={onIconClick}
-        role="button"
-        tabIndex={0}
       />
-      {isShowPopup && errorDetails && (
-        <Popup referenceElement={refElem} strategy={popupStrategy}>
-          <PaymentErrorDetails details={errorDetails} />
-        </Popup>
-      )}
-    </div>
+    </Popover>
   );
 };
 

@@ -1,19 +1,23 @@
 // @ts-ignore
 import { API } from "../../config";
+import * as ALERT from "./workPeriods/alerts";
 import * as API_CHALLENGE_PAYMENT_STATUS from "./workPeriods/apiChallengePaymentStatus";
 import * as API_PAYMENT_STATUS from "./workPeriods/apiPaymentStatus";
 import * as API_SORT_BY from "./workPeriods/apiSortBy";
 import * as SORT_BY from "./workPeriods/sortBy";
 import * as SORT_ORDER from "./workPeriods/sortOrder";
 import * as PAYMENT_STATUS from "./workPeriods/paymentStatus";
+import * as REASON_DISABLED from "./workPeriods/reasonDisabled";
 
 export {
+  ALERT,
   API_CHALLENGE_PAYMENT_STATUS,
   API_PAYMENT_STATUS,
   API_SORT_BY,
   SORT_BY,
   SORT_ORDER,
   PAYMENT_STATUS,
+  REASON_DISABLED,
 };
 
 // resource bookings API url
@@ -22,8 +26,10 @@ export const JOBS_API_URL = `${API.V5}/jobs`;
 export const PAYMENTS_API_URL = `${API.V5}/work-period-payments`;
 export const PROJECTS_API_URL = `${API.V5}/projects`;
 export const WORK_PERIODS_API_URL = `${API.V5}/work-periods`;
+export const TAAS_TEAM_API_URL = `${API.V5}/taas-teams`;
 
 export const DATE_FORMAT_API = "YYYY-MM-DD";
+export const DATE_FORMAT_ISO = "YYYY-MM-DD";
 export const DATE_FORMAT_UI = "MMM DD, YYYY";
 
 // Field names that are required to be retrieved for display, filtering and sorting.
@@ -47,11 +53,13 @@ export const API_REQUIRED_FIELDS = [
   "workPeriods.daysPaid",
   "workPeriods.payments.amount",
   "workPeriods.payments.challengeId",
+  "workPeriods.payments.createdAt",
   "workPeriods.payments.days",
   "workPeriods.payments.id",
   "workPeriods.payments.memberRate",
   "workPeriods.payments.status",
   "workPeriods.payments.statusDetails",
+  "workPeriods.payments.workPeriodId",
 ];
 
 // Valid parameter names for requests.
@@ -135,3 +143,15 @@ export const JOB_NAME_ERROR = "<Error loading job>";
 export const BILLING_ACCOUNTS_LOADING = "Loading...";
 export const BILLING_ACCOUNTS_NONE = "<No accounts available>";
 export const BILLING_ACCOUNTS_ERROR = "<Error loading accounts>";
+
+export const REASON_DISABLED_MESSAGE_MAP = {
+  [REASON_DISABLED.NO_BILLING_ACCOUNT]:
+    "Billing Account is not set for the Resource Booking",
+  [REASON_DISABLED.NO_DAYS_TO_PAY_FOR]: "There are no days to pay for",
+  [REASON_DISABLED.NO_MEMBER_RATE]: "Member Rate should be greater than 0",
+};
+
+export const ALERT_MESSAGE_MAP = {
+  [ALERT.BA_NOT_ASSIGNED]: "BA - Not Assigned",
+  [ALERT.LAST_BOOKING_WEEK]: "Last Booking Week",
+};

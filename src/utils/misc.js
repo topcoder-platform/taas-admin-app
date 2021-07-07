@@ -15,7 +15,7 @@ export function filterPeriodsByStartDate(periods, startDate) {
   const items = [];
   startDate = moment(startDate);
   for (let period of periods) {
-    if (moment(period.startDate).isSameOrAfter(startDate, "date")) {
+    if (period.start.isSameOrAfter(startDate, "date")) {
       items.push(period);
     }
   }
@@ -78,6 +78,11 @@ export function preventDefault(event) {
  */
 export function stopPropagation(event) {
   event.stopPropagation();
+}
+
+export function stopImmediatePropagation(event) {
+  event.stopPropagation();
+  event.nativeEvent.stopImmediatePropagation();
 }
 
 /**
@@ -145,6 +150,13 @@ export const extractResponsePagination = ({ headers }) => ({
 export const extractJobName = (data) => data.title;
 
 export const extractResponseData = (response) => response.data;
+
+export const hasKey = (obj) => {
+  for (let key in obj) {
+    return true;
+  }
+  return false;
+};
 
 export const increment = (value) => value + 1;
 
