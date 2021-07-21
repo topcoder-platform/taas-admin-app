@@ -63,10 +63,16 @@ export function createPeriodAlerts(period, periodEnd) {
  * payment processing.
  *
  * @param {Object} period working period object
+ * @param {Array}  dateRange date range array
  * @returns {?string[]}
  */
-export function findReasonsDisabled(period) {
+export function findReasonsDisabled(period, dateRange) {
   const reasons = [];
+  if (dateRange && dateRange.length > 0) {
+    if (dateRange[0].isAfter(moment())) {
+      reasons.push(REASON_DISABLED.NOT_ALLOW_FUTURE_WEEK);
+    }
+  }
   if (!period.billingAccountId) {
     reasons.push(REASON_DISABLED.NO_BILLING_ACCOUNT);
   }

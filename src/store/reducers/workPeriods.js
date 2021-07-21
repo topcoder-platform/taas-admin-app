@@ -141,7 +141,7 @@ const actionHandlers = {
         periodEnd
       );
       periodsData[period.id] = periodData;
-      let reasonsDisabled = findReasonsDisabled(period);
+      let reasonsDisabled = findReasonsDisabled(period, dateRange);
       if (reasonsDisabled) {
         periodsDisabledMap.set(period.id, reasonsDisabled);
       }

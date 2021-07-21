@@ -1,10 +1,17 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Tooltip from "components/Tooltip";
 import cn from "classnames";
+import moment from "moment";
 import Checkbox from "components/Checkbox";
 import SortingControl from "components/SortingControl";
 import { SORT_BY } from "constants/workPeriods";
 import {
+  REASON_DISABLED,
+  REASON_DISABLED_MESSAGE_MAP,
+} from "constants/workPeriods"
+import {
+  getWorkPeriodsDateRange,
   getWorkPeriodsIsSelectedVisible,
   getWorkPeriodsSorting,
 } from "store/selectors/workPeriods";
@@ -24,6 +31,7 @@ import styles from "./styles.module.scss";
 const PeriodListHead = () => {
   const sorting = useSelector(getWorkPeriodsSorting);
   const isSelectedVisible = useSelector(getWorkPeriodsIsSelectedVisible);
+  const periodsDateRange = useSelector(getWorkPeriodsDateRange);
   const dispatch = useDispatch();
   const { criteria, order } = sorting;
 
@@ -39,16 +47,40 @@ const PeriodListHead = () => {
     dispatch(toggleWorkingPeriodsVisible());
   }, [dispatch]);
 
+  const reasonsDisabled = useMemo(()=> {
+    if (periodsDateRange[0].isAfter(moment())) {
+      return REASON_DISABLED.NOT_ALLOW_FUTURE_WEEK;
+    }
+    return null
+  }, [periodsDateRange])
+
+  const reasonsDisabledElement = useMemo(
+    () => (
+      <div className={styles.tooltipContent}>
+        {reasonsDisabled && REASON_DISABLED_MESSAGE_MAP[reasonsDisabled]}
+      </div>
+    ),
+    [reasonsDisabled]
+  );
+
   return (
     <tr className={styles.container}>
       <th>
         <div className={styles.colHead}>
-          <Checkbox
-            size="small"
-            name={"visible_periods_selected"}
-            onChange={onToggleVisible}
-            checked={isSelectedVisible}
-          />
+          <Tooltip
+            content={reasonsDisabledElement}
+            isDisabled={!reasonsDisabled}
+            strategy="fixed"
+            targetClassName={styles.checkboxContainer}
+          >
+            <Checkbox
+              size="small"
+              isDisabled={!!reasonsDisabled}
+              name={"visible_periods_selected"}
+              onChange={onToggleVisible}
+              checked={isSelectedVisible}
+            />
+          </Tooltip>
         </div>
       </th>
       {HEAD_CELLS.map(({ id, className, label, disableSort }) => (
