@@ -5,11 +5,11 @@ import cn from "classnames";
 import moment from "moment";
 import Checkbox from "components/Checkbox";
 import SortingControl from "components/SortingControl";
-import { SORT_BY } from "constants/workPeriods";
 import {
+  SORT_BY,
   REASON_DISABLED,
   REASON_DISABLED_MESSAGE_MAP,
-} from "constants/workPeriods"
+} from "constants/workPeriods";
 import {
   getWorkPeriodsDateRange,
   getWorkPeriodsIsSelectedVisible,
@@ -47,12 +47,12 @@ const PeriodListHead = () => {
     dispatch(toggleWorkingPeriodsVisible());
   }, [dispatch]);
 
-  const reasonsDisabled = useMemo(()=> {
+  const reasonsDisabled = useMemo(() => {
     if (periodsDateRange[0].isAfter(moment())) {
       return REASON_DISABLED.NOT_ALLOW_FUTURE_WEEK;
     }
-    return null
-  }, [periodsDateRange])
+    return null;
+  }, [periodsDateRange]);
 
   const reasonsDisabledElement = useMemo(
     () => (

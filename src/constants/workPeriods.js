@@ -150,7 +150,7 @@ export const REASON_DISABLED_MESSAGE_MAP = {
   [REASON_DISABLED.NO_DAYS_TO_PAY_FOR]: "There are no days to pay for",
   [REASON_DISABLED.NO_MEMBER_RATE]: "Member Rate should be greater than 0",
   [REASON_DISABLED.NOT_ALLOW_FUTURE_WEEK]:
-    "Not allow processing payments for the future weeks",
+    "Not allowed processing payments for the future weeks",
 };
 
 export const ALERT_MESSAGE_MAP = {
