@@ -8,11 +8,12 @@ import CheckboxList from "components/CheckboxList";
 import SearchHandleField from "components/SearchHandleField";
 import SidebarSection from "components/SidebarSection";
 import Toggle from "components/Toggle";
-import { PAYMENT_STATUS } from "constants/workPeriods";
+import { PAYMENT_STATUS, ALERT } from "constants/workPeriods";
 import { getWorkPeriodsFilters } from "store/selectors/workPeriods";
 import {
   resetWorkPeriodsFilters,
   setWorkPeriodsPaymentStatuses,
+  setAlertOption,
   setWorkPeriodsUserHandle,
   toggleShowFailedPaymentsOnly,
 } from "store/actions/workPeriods";
@@ -35,7 +36,7 @@ import styles from "./styles.module.scss";
 const PeriodFilters = ({ className }) => {
   const dispatch = useDispatch();
   const filters = useSelector(getWorkPeriodsFilters);
-  const { onlyFailedPayments, paymentStatuses, userHandle } = filters;
+  const { onlyFailedPayments, paymentStatuses, alertOptions, userHandle } = filters;
 
   const onToggleFailedPayments = useCallback(
     (on) => {
@@ -56,6 +57,14 @@ const PeriodFilters = ({ className }) => {
   const onPaymentStatusesChange = useCallback(
     (statuses) => {
       dispatch(setWorkPeriodsPaymentStatuses(statuses));
+      dispatch(updateQueryFromState());
+    },
+    [dispatch]
+  );
+
+  const onAlertOptionsChange = useCallback(
+    (option) => {
+      dispatch(setAlertOption(option));
       dispatch(updateQueryFromState());
     },
     [dispatch]
@@ -113,6 +122,14 @@ const PeriodFilters = ({ className }) => {
           onChange={onToggleFailedPayments}
         />
       </div>
+      <SidebarSection label="Alerts">
+        <CheckboxList
+          name="alert_option[]"
+          onChange={onAlertOptionsChange}
+          options={ALERT_OPTIONS}
+          value={alertOptions}
+        />
+      </SidebarSection>
       <div className={styles.buttons}>
         <Button className={styles.button} size="small" onClick={onClearFilter}>
           Clear Filter
@@ -132,6 +149,12 @@ const PAYMENT_STATUS_OPTIONS = [
   { value: PAYMENT_STATUS.PARTIALLY_COMPLETED, label: "Partially Completed" },
   { value: PAYMENT_STATUS.IN_PROGRESS, label: "In Progress" },
   { value: PAYMENT_STATUS.NO_DAYS, label: "No Days" },
+];
+
+const ALERT_OPTIONS = [
+  { value: ALERT.BA_NOT_ASSIGNED, label: "No BA Assigned" },
+  { value: ALERT.ONBOARDING_WEEK, label: "Onboarding Week" },
+  { value: ALERT.LAST_BOOKING_WEEK, label: "Last Booking Week" },
 ];
 
 export default memo(PeriodFilters);

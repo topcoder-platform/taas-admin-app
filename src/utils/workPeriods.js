@@ -117,13 +117,19 @@ export function removeValueImmutable(items, value) {
  */
 export function makeUrlQuery(state) {
   const { filters, pagination, sorting } = state;
-  const { dateRange, onlyFailedPayments, paymentStatuses, userHandle } =
-    filters;
+  const {
+    dateRange,
+    onlyFailedPayments,
+    paymentStatuses,
+    alertOptions,
+    userHandle,
+  } = filters;
   const { pageNumber, pageSize } = pagination;
   const { criteria, order } = sorting;
   const params = {
     startDate: dateRange[0].format(DATE_FORMAT_API),
     paymentStatuses: Object.keys(paymentStatuses).join(",").toLowerCase(),
+    alertOptions: Object.keys(alertOptions).join(",").toLowerCase(),
     onlyFailedPayments: onlyFailedPayments ? "y" : "",
     userHandle: encodeURIComponent(userHandle),
     criteria: criteria.toLowerCase(),

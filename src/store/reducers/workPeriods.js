@@ -42,6 +42,7 @@ const initFilters = () => ({
   dateRange: getWeekByDate(moment()),
   onlyFailedPayments: false,
   paymentStatuses: {}, // all disabled by default
+  alertOptions: {},
   userHandle: "",
 });
 
@@ -556,6 +557,17 @@ const actionHandlers = {
       pageNumber: 1,
     },
   }),
+  [ACTION_TYPE.WP_SET_ALERT_OPTION]: (state, alertOptions) => ({
+    ...state,
+    filters: {
+      ...state.filters,
+      alertOptions: updateOptionMap(state.filters.alertOptions, alertOptions),
+    },
+    pagination: {
+      ...state.pagination,
+      pageNumber: 1,
+    },
+  }),
   [ACTION_TYPE.WP_SET_USER_HANDLE]: (state, userHandle) => {
     if (userHandle === state.filters.userHandle) {
       return state;
@@ -944,6 +956,34 @@ function updateStateFromQuery(queryStr, state) {
     filters.paymentStatuses = queryPaymentStatuses;
     updateFilters = true;
   }
+
+  // checking alert option
+  let hasSameOption = true;
+  const filtersAlertOptions = filters.alertOptions;
+  const queryAlertOptions = {};
+  const alertOptionsStr = params.alertOptions;
+  if (alertOptionsStr) {
+    for (let option of alertOptionsStr.split(",")) {
+      option = option.toUpperCase();
+      if (option in ALERT) {
+        queryAlertOptions[option] = true;
+        if (!filtersAlertOptions[option]) {
+          hasSameOption = false;
+        }
+      }
+    }
+  }
+  for (let option in filtersAlertOptions) {
+    if (!filtersAlertOptions[option]) {
+      hasSameOption = false;
+      break;
+    }
+  }
+  if (!hasSameOption) {
+    filters.alertOptions = queryAlertOptions;
+    updateFilters = true;
+  }
+
   // chacking only failed payments flag
   const onlyFailedFlag = params.onlyFailedPayments?.slice(0, 1);
   const onlyFailedPayments = onlyFailedFlag === "y";

@@ -266,6 +266,17 @@ export const setWorkPeriodsPaymentStatuses = (paymentStatuses) => ({
 });
 
 /**
+ * Creates an action denoting the changing of alert option
+ *
+ * @param {Object} paymentStatuses object with working periods' payment statuses
+ * @returns {Object}
+ */
+export const setAlertOption = (option) => ({
+  type: ACTION_TYPE.WP_SET_ALERT_OPTION,
+  payload: option,
+});
+
+/**
  * Creates an action denoting the changing of working periods' topcoder handle.
  *
  * @param {string} handle user's Topcoder handle

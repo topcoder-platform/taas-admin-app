@@ -42,6 +42,7 @@ export const API_REQUIRED_FIELDS = [
   "endDate",
   "memberRate",
   "status",
+  "billingAccountId",
   "workPeriods.id",
   "workPeriods.projectId",
   "workPeriods.userHandle",
@@ -128,6 +129,7 @@ export const API_CHALLENGE_PAYMENT_STATUS_MAP = {
 export const URL_QUERY_PARAM_MAP = new Map([
   ["startDate", "startDate"],
   ["paymentStatuses", "status"],
+  ["alertOptions", "alert"],
   ["onlyFailedPayments", "onlyFailed"],
   ["userHandle", "user"],
   ["criteria", "by"],
