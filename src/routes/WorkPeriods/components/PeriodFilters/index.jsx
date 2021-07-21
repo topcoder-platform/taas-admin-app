@@ -36,7 +36,8 @@ import styles from "./styles.module.scss";
 const PeriodFilters = ({ className }) => {
   const dispatch = useDispatch();
   const filters = useSelector(getWorkPeriodsFilters);
-  const { onlyFailedPayments, paymentStatuses, alertOptions, userHandle } = filters;
+  const { onlyFailedPayments, paymentStatuses, alertOptions, userHandle } =
+    filters;
 
   const onToggleFailedPayments = useCallback(
     (on) => {

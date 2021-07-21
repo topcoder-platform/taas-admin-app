@@ -99,10 +99,9 @@ export const fetchWorkPeriods = (rbId, source) => {
 export const fetchResourceBookings = (params) => {
   const source = CancelToken.source();
   return [
-    axios.get(
-      `${RB_API_URL}?${buildRequestQuery(params)}`,
-      { cancelToken: source.token }
-    ),
+    axios.get(`${RB_API_URL}?${buildRequestQuery(params)}`, {
+      cancelToken: source.token,
+    }),
     source,
   ];
 };
