@@ -123,7 +123,7 @@ const PeriodFilters = ({ className }) => {
           onChange={onToggleFailedPayments}
         />
       </div>
-      <SidebarSection label="Alerts">
+      <SidebarSection label="Misc Filters">
         <CheckboxList
           name="alert_option[]"
           onChange={onAlertOptionsChange}
