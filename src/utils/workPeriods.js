@@ -63,10 +63,16 @@ export function createPeriodAlerts(period, periodEnd) {
  * payment processing.
  *
  * @param {Object} period working period object
+ * @param {Array}  dateRange date range array
  * @returns {?string[]}
  */
-export function findReasonsDisabled(period) {
+export function findReasonsDisabled(period, dateRange) {
   const reasons = [];
+  if (dateRange && dateRange.length > 0) {
+    if (dateRange[0].isAfter(moment())) {
+      reasons.push(REASON_DISABLED.NOT_ALLOW_FUTURE_WEEK);
+    }
+  }
   if (!period.billingAccountId) {
     reasons.push(REASON_DISABLED.NO_BILLING_ACCOUNT);
   }
@@ -111,13 +117,19 @@ export function removeValueImmutable(items, value) {
  */
 export function makeUrlQuery(state) {
   const { filters, pagination, sorting } = state;
-  const { dateRange, onlyFailedPayments, paymentStatuses, userHandle } =
-    filters;
+  const {
+    dateRange,
+    onlyFailedPayments,
+    paymentStatuses,
+    alertOptions,
+    userHandle,
+  } = filters;
   const { pageNumber, pageSize } = pagination;
   const { criteria, order } = sorting;
   const params = {
     startDate: dateRange[0].format(DATE_FORMAT_API),
     paymentStatuses: Object.keys(paymentStatuses).join(",").toLowerCase(),
+    alertOptions: Object.keys(alertOptions).join(",").toLowerCase(),
     onlyFailedPayments: onlyFailedPayments ? "y" : "",
     userHandle: encodeURIComponent(userHandle),
     criteria: criteria.toLowerCase(),

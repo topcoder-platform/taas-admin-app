@@ -42,6 +42,7 @@ export const API_REQUIRED_FIELDS = [
   "endDate",
   "memberRate",
   "status",
+  "billingAccountId",
   "workPeriods.id",
   "workPeriods.projectId",
   "workPeriods.userHandle",
@@ -128,6 +129,7 @@ export const API_CHALLENGE_PAYMENT_STATUS_MAP = {
 export const URL_QUERY_PARAM_MAP = new Map([
   ["startDate", "startDate"],
   ["paymentStatuses", "status"],
+  ["alertOptions", "alert"],
   ["onlyFailedPayments", "onlyFailed"],
   ["userHandle", "user"],
   ["criteria", "by"],
@@ -149,6 +151,8 @@ export const REASON_DISABLED_MESSAGE_MAP = {
     "Billing Account is not set for the Resource Booking",
   [REASON_DISABLED.NO_DAYS_TO_PAY_FOR]: "There are no days to pay for",
   [REASON_DISABLED.NO_MEMBER_RATE]: "Member Rate should be greater than 0",
+  [REASON_DISABLED.NOT_ALLOW_FUTURE_WEEK]:
+    "Not allowed processing payments for the future weeks",
 };
 
 export const ALERT_MESSAGE_MAP = {

@@ -113,6 +113,13 @@ export const loadWorkPeriodsPage = async (dispatch, getState) => {
     ["workPeriods.userHandle"]: userHandle,
     ["workPeriods.startDate"]: startDate.format(DATE_FORMAT_API),
     ["workPeriods.paymentStatus"]: paymentStatuses,
+    ["billingAccountId"]: filters.alertOptions.BA_NOT_ASSIGNED ? 0 : null,
+    ["workPeriods.isFirstWeek"]: filters.alertOptions.ONBOARDING_WEEK
+      ? true
+      : null,
+    ["workPeriods.isLastWeek"]: filters.alertOptions.LAST_BOOKING_WEEK
+      ? true
+      : null,
     ["workPeriods.payments.status"]: onlyFailedPayments
       ? API_CHALLENGE_PAYMENT_STATUS.FAILED
       : null,

@@ -1,7 +1,6 @@
 import axios, { CancelToken } from "./axios";
 import {
   API_CHALLENGE_PAYMENT_STATUS,
-  API_QUERY_PARAM_NAMES,
   JOBS_API_URL,
   PAYMENTS_API_URL,
   PROJECTS_API_URL,
@@ -100,10 +99,9 @@ export const fetchWorkPeriods = (rbId, source) => {
 export const fetchResourceBookings = (params) => {
   const source = CancelToken.source();
   return [
-    axios.get(
-      `${RB_API_URL}?${buildRequestQuery(params, API_QUERY_PARAM_NAMES)}`,
-      { cancelToken: source.token }
-    ),
+    axios.get(`${RB_API_URL}?${buildRequestQuery(params)}`, {
+      cancelToken: source.token,
+    }),
     source,
   ];
 };

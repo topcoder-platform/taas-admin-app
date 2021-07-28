@@ -116,12 +116,11 @@ export function updateOptionMap(oldOptions, newOptions) {
  * that are not numbers and are falsy are ignored.
  *
  * @param {Object} params query parameters object
- * @param {string[]} paramNames array of valid query parameter names
  * @returns {string} query string
  */
-export const buildRequestQuery = (params, paramNames) => {
+export const buildRequestQuery = (params) => {
   const queryParams = [];
-  for (const paramName of paramNames) {
+  for (const paramName in params) {
     const paramValue = params[paramName];
     if (
       !(paramName in params) ||
