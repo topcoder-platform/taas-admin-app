@@ -170,7 +170,7 @@ export const cancelWorkPeriodPayment = (paymentId) => {
  * @returns {Promise}
  */
 export const postWorkPeriodsPayments = (payments) => {
-  return axios.post(`${PAYMENTS_API_URL}`, payments).then(extractResponseData);
+  return axios.post(`${PAYMENTS_API_URL}/bulk`, payments).then(extractResponseData);
 };
 
 /**
