@@ -3,7 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import omit from "lodash/omit";
 import withAuthentication from "hoc/withAuthentication";
-import { setFilter, setIsModalOpen, setModalRole } from "store/actions/roles";
+import {
+  setFilter,
+  setIsModalOpen,
+  setModalError,
+  setModalRole,
+} from "store/actions/roles";
 import { createRole, deleteRole, updateRole } from "store/thunks/roles";
 import {
   getRolesIsModalOpen,
@@ -48,6 +53,7 @@ const Roles = () => {
 
   const onCreateClick = useCallback(() => {
     setModalOperationType("CREATE");
+    dispatch(setModalError(null));
     // role template with initial values
     dispatch(
       setModalRole({
@@ -65,6 +71,7 @@ const Roles = () => {
   const onEditClick = useCallback(
     (role) => {
       setModalOperationType("EDIT");
+      dispatch(setModalError(null));
       dispatch(setModalRole(role));
       dispatch(setIsModalOpen(true));
     },
@@ -74,6 +81,7 @@ const Roles = () => {
   const onDeleteClick = useCallback(
     (role) => {
       setModalOperationType("DELETE");
+      dispatch(setModalError(null));
       dispatch(setModalRole(role));
       dispatch(setIsModalOpen(true));
     },
