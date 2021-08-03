@@ -5,6 +5,7 @@ import NavMenu from "components/NavMenu";
 import styles from "./styles.module.scss";
 import WorkPeriods from "components/Icons/WorkPeriods";
 import Freelancers from "components/Icons/Freelancers";
+import Roles from "components/Icons/Roles";
 import { APP_BASE_PATH } from "../../constants";
 
 /**
@@ -37,6 +38,11 @@ const NAV_ITEMS = [
     icon: Freelancers,
     label: "Freelancers",
     path: `${APP_BASE_PATH}/freelancers`,
+  },
+  {
+    icon: Roles,
+    label: "Roles",
+    path: `${APP_BASE_PATH}/roles`,
   },
 ];
 

@@ -8,6 +8,8 @@ export const WORK_PERIODS_PATH = `${APP_BASE_PATH}/work-periods`;
 
 export const FREELANCERS_PATH = `${APP_BASE_PATH}/freelancers`;
 
+export const ROLES_PATH = `${APP_BASE_PATH}/roles`;
+
 export const TAAS_BASE_PATH = "/taas";
 
 export const ADMIN_ROLES = ["bookingmanager", "administrator"];

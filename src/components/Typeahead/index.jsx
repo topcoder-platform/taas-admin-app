@@ -1,9 +1,9 @@
 import React, { useCallback, useRef, useState } from "react";
 import PT from "prop-types";
 import cn from "classnames";
+import get from "lodash/get";
 import throttle from "lodash/throttle";
 import Select, { components } from "react-select";
-import { getMemberSuggestions } from "services/teams";
 import { useUpdateEffect } from "utils/hooks";
 import styles from "./styles.module.scss";
 
@@ -75,9 +75,11 @@ const selectComponents = {
  * @param {function} [props.onInputChange] function called when input value changes
  * @param {function} [props.onBlur] function called on input blur
  * @param {string} props.value input value
+ * @param {function} props.getSuggestions the function to get suggestions
+ * @param {string} props.targetProp the target property of the returned object from getSuggestions
  * @returns {JSX.Element}
  */
-const SearchHandleField = ({
+const Typeahead = ({
   className,
   id,
   name,
@@ -87,6 +89,8 @@ const SearchHandleField = ({
   onBlur,
   placeholder,
   value,
+  getSuggestions,
+  targetProp,
 }) => {
   const [inputValue, setInputValue] = useState(value);
   const [isLoading, setIsLoading] = useState(false);
@@ -165,11 +169,15 @@ const SearchHandleField = ({
           return;
         }
         setIsLoading(true);
-        const options = await loadSuggestions(value);
+        setIsMenuOpen(true);
+        const options = await loadSuggestions(
+          getSuggestions,
+          value,
+          targetProp
+        );
         if (!isChangeAppliedRef.current) {
           setOptions(options);
           setIsLoading(false);
-          setIsMenuOpen(true);
         }
       },
       300,
@@ -223,17 +231,17 @@ const SearchHandleField = ({
   );
 };
 
-const loadSuggestions = async (inputValue) => {
+const loadSuggestions = async (getSuggestions, inputValue, targetProp) => {
   let options = [];
   if (inputValue.length < 3) {
     return options;
   }
   try {
-    const res = await getMemberSuggestions(inputValue);
-    const users = res.data.slice(0, 100);
+    const res = await getSuggestions(inputValue);
+    const items = res.data.slice(0, 100);
     let match = null;
-    for (let i = 0, len = users.length; i < len; i++) {
-      let value = users[i].handle;
+    for (let i = 0, len = items.length; i < len; i++) {
+      let value = get(items[i], targetProp);
       if (value === inputValue) {
         match = { value, label: value };
       } else {
@@ -250,7 +258,7 @@ const loadSuggestions = async (inputValue) => {
   return options;
 };
 
-SearchHandleField.propTypes = {
+Typeahead.propTypes = {
   className: PT.string,
   id: PT.string.isRequired,
   size: PT.oneOf(["medium", "small"]),
@@ -260,6 +268,8 @@ SearchHandleField.propTypes = {
   onBlur: PT.func,
   placeholder: PT.string,
   value: PT.oneOfType([PT.number, PT.string]),
+  getSuggestions: PT.func,
+  targetProp: PT.string,
 };
 
-export default SearchHandleField;
+export default Typeahead;

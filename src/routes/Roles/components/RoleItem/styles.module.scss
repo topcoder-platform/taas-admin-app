@@ -1,0 +1,76 @@
+@import "styles/mixins";
+@import "styles/variables";
+
+.item {
+  border: 1px solid #d4d4d4;
+  border-radius: 5px;
+  padding: 12px 16px;
+  width: 212px;
+  height: 136px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: flex-start;
+
+  .role-icon {
+    width: 42px;
+    height: 42px;
+    margin-left: 8px;
+    object-fit: cover;
+  }
+  
+  .item-text {
+    @include barlow-bold;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 20px;
+    text-transform: uppercase;
+  }
+
+  &:hover {
+    .controls {
+      visibility: visible;
+    }
+  }
+
+  .controls {
+    display: flex;
+    width: 40%;
+    justify-content: space-between;
+    visibility: hidden;
+
+    .button {
+      font-size: 14px;
+      line-height: 22px;
+      padding: 0;
+      outline: none;
+      background: none;
+      color: #0d61bf;
+      border: none;
+      text-align: left;
+    
+      &.red {
+        color: $error-text-color;
+      }
+    
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .item {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .item {
+    .controls {
+      visibility: visible;
+      width: 25%;
+    }
+  }
+}

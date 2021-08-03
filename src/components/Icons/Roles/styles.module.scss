@@ -1,0 +1,19 @@
+.container {
+  svg {
+    display: block;
+    width: auto;
+    height: 100%;
+
+    path {
+      fill: #7f7f7f;
+    }
+  }
+
+  &.isActive {
+    svg {
+      path {
+        fill: #06d6a0;
+      }
+    }
+  }
+}
