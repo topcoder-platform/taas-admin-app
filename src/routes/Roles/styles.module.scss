@@ -1,0 +1,46 @@
+.page {
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  .header {
+    display: flex;
+    justify-content: space-between;
+    .input {
+      width: 300px;
+      line-height: 22px;
+      &::placeholder {
+        color: #aaaaaa;
+      }
+      &:not(:focus) {
+        background-image: url("../../assets/images/icon-search.svg");
+        background-repeat: no-repeat;
+        background-position: 10px center;
+        text-indent: 20px;
+      }
+    }
+  }
+}
+
+strong {
+  font-weight: 700;
+}
+
+.spinner-container {
+  display: flex;
+  align-items: center;
+  .spinner {
+    margin-right: 5px;
+    margin-top: 3px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .page {
+    .header {
+      flex-direction: column;
+      .input {
+        width: 100%;
+      }
+    }
+  }
+}

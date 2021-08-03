@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import PT from "prop-types";
 import cn from "classnames";
+import { getMemberSuggestions } from "services/teams";
 import Button from "components/Button";
 import CheckboxList from "components/CheckboxList";
-import SearchHandleField from "components/SearchHandleField";
+import Typeahead from "components/Typeahead";
 import SidebarSection from "components/SidebarSection";
 import Toggle from "components/Toggle";
 import { PAYMENT_STATUS, ALERT } from "constants/workPeriods";
@@ -97,12 +98,14 @@ const PeriodFilters = ({ className }) => {
       onSubmit={preventDefault}
     >
       <div className={styles.handleSection}>
-        <SearchHandleField
+        <Typeahead
           id="topcoder-handle"
           name="topcoder_handle"
           placeholder="Search Topcoder Handle"
           onChange={onUserHandleChange}
           value={userHandle}
+          getSuggestions={getMemberSuggestions}
+          targetProp="handle"
         />
       </div>
       <SidebarSection label="Payment Status">
