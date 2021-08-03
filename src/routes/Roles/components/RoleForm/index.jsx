@@ -89,6 +89,14 @@ function RoleForm() {
 
   const editRate = useCallback(
     (index, changes) => {
+      // a num field is `null` but user trying to increase/decrease it
+      // start with 0
+      for (const key in changes) {
+        if (isNaN(changes[key])) {
+          changes[key] = 0;
+        }
+      }
+      // apply changes
       dispatch(
         setModalRole({
           ...roleState,
