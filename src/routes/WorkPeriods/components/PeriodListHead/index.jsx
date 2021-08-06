@@ -112,6 +112,7 @@ const HEAD_CELLS = [
   { label: "Total Paid", id: SORT_BY.PAYMENT_TOTAL, className: "totalPaid" },
   { label: "Status", id: SORT_BY.PAYMENT_STATUS },
   { label: "Working Days", id: SORT_BY.WORKING_DAYS },
+  { label: "", id: "ACTIONS_MENU", disableSort: true },
 ];
 
 export default PeriodListHead;

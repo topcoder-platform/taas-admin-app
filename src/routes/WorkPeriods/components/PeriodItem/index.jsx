@@ -10,6 +10,8 @@ import Tooltip from "components/Tooltip";
 import PaymentError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
 import PaymentTotal from "../PaymentTotal";
+import PeriodActions from "../PeriodActions";
+import PeriodAlerts from "../PeriodAlerts";
 import PeriodWorkingDays from "../PeriodWorkingDays";
 import PeriodDetails from "../PeriodDetails";
 import ProcessingError from "../ProcessingError";
@@ -19,6 +21,7 @@ import {
 } from "constants/workPeriods";
 import {
   setWorkPeriodWorkingDays,
+  toggleWorkingDaysAllowExtra,
   toggleWorkingDaysUpdated,
   toggleWorkPeriod,
 } from "store/actions/workPeriods";
@@ -34,7 +37,6 @@ import {
 } from "utils/formatters";
 import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
-import PeriodAlerts from "../PeriodAlerts";
 
 /**
  * Displays the working period data row to be used in PeriodList component.
@@ -72,6 +74,10 @@ const PeriodItem = ({
   const onToggleItemDetails = useCallback(() => {
     dispatch(toggleWorkPeriodDetails(item));
   }, [dispatch, item]);
+
+  const onApproveExtraWorkingDays = useCallback(() => {
+    dispatch(toggleWorkingDaysAllowExtra(item.id, true));
+  }, [dispatch, item.id]);
 
   const onWorkingDaysUpdateHintTimeout = useCallback(() => {
     dispatch(toggleWorkingDaysUpdated(item.id, false));
@@ -202,6 +208,7 @@ const PeriodItem = ({
           <PaymentTotal
             className={styles.paymentTotalContainer}
             daysPaid={data.daysPaid}
+            daysWorked={data.daysWorked}
             payments={data.payments}
             paymentTotal={data.paymentTotal}
             popupStrategy="fixed"
@@ -217,10 +224,14 @@ const PeriodItem = ({
             controlName={`wp_wrk_days_${item.id}`}
             data={data}
             isDisabled={isDisabled}
+            onApproveExtraWorkingDays={onApproveExtraWorkingDays}
             onWorkingDaysChange={onWorkingDaysChange}
             onWorkingDaysUpdateHintTimeout={onWorkingDaysUpdateHintTimeout}
             updateHintTimeout={2000}
           />
+        </td>
+        <td>
+          <PeriodActions period={item} periodData={data} />
         </td>
       </tr>
       {details && (

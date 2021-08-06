@@ -10,6 +10,7 @@ import PeriodWorkingDays from "../PeriodWorkingDays";
 import { PAYMENT_STATUS } from "constants/workPeriods";
 import {
   setDetailsWorkingDays,
+  toggleWorkingDaysAllowExtra,
   toggleWorkingDaysUpdated,
 } from "store/actions/workPeriods";
 import { updateWorkPeriodWorkingDays } from "store/thunks/workPeriods";
@@ -40,6 +41,10 @@ const PeriodsHistoryItem = ({
   const dateLabel = formatDateLabel(item.start, currentStartDate);
   const daysWorked = data.daysWorked;
   const isCurrent = item.start.isSame(currentStartDate, "date");
+
+  const onApproveExtraWorkingDays = useCallback(() => {
+    dispatch(toggleWorkingDaysAllowExtra(item.id, true));
+  }, [dispatch, item.id]);
 
   const onWorkingDaysChange = useCallback(
     (daysWorked) => {
@@ -90,9 +95,10 @@ const PeriodsHistoryItem = ({
         )}
         <PaymentTotal
           className={styles.paymentTotalContainer}
+          daysPaid={data.daysPaid}
+          daysWorked={data.daysWorked}
           payments={data.payments}
           paymentTotal={data.paymentTotal}
-          daysPaid={data.daysPaid}
         />
       </td>
       <td className={styles.paymentStatus}>
@@ -110,6 +116,7 @@ const PeriodsHistoryItem = ({
             controlName={`wp_det_wd_${item.id}`}
             data={data}
             isDisabled={isDisabled}
+            onApproveExtraWorkingDays={onApproveExtraWorkingDays}
             onWorkingDaysChange={onWorkingDaysChange}
             onWorkingDaysUpdateHintTimeout={onWorkingDaysUpdateHintTimeout}
             updateHintTimeout={2000}

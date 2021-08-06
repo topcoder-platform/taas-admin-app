@@ -51,7 +51,7 @@ const PeriodList = ({ className }) => {
             </thead>
             <tbody>
               <tr>
-                <td colSpan={10} className={styles.listTopMargin}></td>
+                <td colSpan={11} className={styles.listTopMargin}></td>
               </tr>
               {periods.map((period) => (
                 <PeriodItem

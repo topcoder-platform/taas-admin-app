@@ -1,0 +1,68 @@
+@import "styles/variables";
+@import "styles/mixins";
+
+.modal {
+  overflow: visible;
+}
+
+.periodInfo {
+  margin: 20px 0 0;
+
+  table {
+    margin: 0 -6px;
+    width: 100%;
+    table-layout: auto;
+  }
+
+  th,
+  td {
+    padding: 5px 6px;
+    white-space: nowrap;
+  }
+
+  th {
+    font-weight: bold;
+  }
+
+  td {
+    width: 100%;
+  }
+}
+
+.jobName,
+.teamName {
+  display: inline;
+  font-weight: normal;
+}
+
+.accountIds {
+  white-space: normal;
+}
+
+.form {
+  margin-top: 20px;
+}
+
+.accountsSelect {
+  display: flex;
+  flex-direction: column;
+
+  @include desktop {
+    width: 75%;
+  }
+
+  &.accountsError {
+    color: #e90c5a;
+  }
+
+  .accountsSelectLabel {
+    position: static;
+    align-self: flex-start;
+    margin: 0 0 5px;
+    padding: 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: $text-color;
+    transform: none;
+  }
+}

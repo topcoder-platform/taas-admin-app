@@ -1,0 +1,77 @@
+@import "styles/variables";
+@import "styles/mixins";
+
+.container {
+  position: relative;
+  background-color: #fff;
+
+  &.hasLabel {
+    margin-top: 10px;
+  }
+
+  &.medium {
+    label {
+      left: 11px;
+      top: -6px;
+    }
+
+    input {
+      padding: 8px 12px;
+      height: $control-height-medium;
+      font-size: 14px;
+      line-height: 22px;
+    }
+  }
+
+  &.small {
+    label {
+      left: 7px;
+      top: -6px;
+    }
+
+    input {
+      padding: 4px 8px;
+      height: $control-height-small;
+      font-size: 14px;
+      line-height: 20px;
+    }
+  }
+
+  &.invalid {
+    input,
+    input:hover {
+      border-color: $error-color;
+      color: $error-text-color;
+    }
+  }
+
+  &.disabled {
+    input:disabled {
+      border-color: $control-disabled-border-color;
+      background: $control-disabled-bg-color;
+      color: $control-disabled-text-color;
+    }
+  }
+
+  label {
+    display: block;
+    z-index: 1;
+    position: absolute;
+    padding: 0 3px;
+    font-size: 12px;
+    line-height: 12px;
+    background: #fff;
+    color: #aaaaaa;
+  }
+
+  input.input {
+    display: block;
+    margin: 0;
+    border: 1px solid $control-border-color;
+    border-radius: 6px;
+    width: 100%;
+    line-height: 22px;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}
