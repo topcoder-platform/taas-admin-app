@@ -194,8 +194,10 @@ function RoleForm() {
           id="skills"
           name="skills"
           placeholder="Search skills..."
+          enforceListOnlySelection={true}
           onChange={(val) => addSkill(val)}
           onInputChange={(val) => setTypeaheadInputValue(val)}
+          minLengthForSuggestions={1} // retrieve suggestions with min. 1 characters. Useful for skills like "C"
           value={typeaheadInputValue}
           getSuggestions={searchSkills}
           targetProp="name"
