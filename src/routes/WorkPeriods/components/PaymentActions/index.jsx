@@ -30,6 +30,13 @@ const PaymentActions = ({ className, daysPaid, daysWorked, payment }) => {
   const actions = useMemo(
     () => [
       {
+        label: "Edit Payment",
+        action() {
+          setIsOpenEditModal(true);
+        },
+        disabled: paymentStatus === PAYMENT_STATUS.IN_PROGRESS,
+      },
+      {
         label: "Cancel Payment",
         action() {
           setIsOpenCancelModal(true);
@@ -37,13 +44,6 @@ const PaymentActions = ({ className, daysPaid, daysWorked, payment }) => {
         disabled:
           paymentStatus === PAYMENT_STATUS.CANCELLED ||
           paymentStatus === PAYMENT_STATUS.IN_PROGRESS,
-      },
-      {
-        label: "Edit Payment",
-        action() {
-          setIsOpenEditModal(true);
-        },
-        disabled: paymentStatus === PAYMENT_STATUS.IN_PROGRESS,
       },
     ],
     [paymentStatus]

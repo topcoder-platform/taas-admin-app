@@ -217,7 +217,7 @@ PaymentModalUpdateBA.propTypes = {
   ).isRequired,
   period: PT.shape({
     id: PT.string.isRequired,
-    jobId: PT.oneOfType([PT.number, PT.string]).isRequired,
+    jobId: PT.oneOfType([PT.number, PT.string]),
     projectId: PT.oneOfType([PT.number, PT.string]).isRequired,
     billingAccountId: PT.number,
     userHandle: PT.string.isRequired,
