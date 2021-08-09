@@ -8,7 +8,10 @@ import cn from "classnames";
 import { getRolesModalRole, getRolesModalError } from "store/selectors/roles";
 import { setModalRole, setModalError } from "store/actions/roles";
 import { searchSkills } from "services/roles";
+import { humanReadableTimeToHours } from "utils/misc";
 import FallbackIcon from "../../../../assets/images/icon-role-fallback.svg";
+import IconExclamationMark from "components/Icons/ExclamationMarkCircled";
+import Popover from "components/Popover";
 import Typeahead from "components/Typeahead";
 import IntegerField from "components/IntegerField";
 import IconArrowSmall from "components/Icons/ArrowSmall";
@@ -69,18 +72,18 @@ function RoleForm() {
         rates: [
           ...roleState.rates,
           {
-            global: 0,
-            inCountry: 0,
-            offShore: 0,
-            niche: 0,
-            rate30Niche: 0,
-            rate30Global: 0,
-            rate30InCountry: 0,
-            rate30OffShore: 0,
-            rate20Niche: 0,
-            rate20Global: 0,
-            rate20InCountry: 0,
-            rate20OffShore: 0,
+            global: 10,
+            inCountry: 10,
+            offShore: 10,
+            niche: 10,
+            rate30Niche: 10,
+            rate30Global: 10,
+            rate30InCountry: 10,
+            rate30OffShore: 10,
+            rate20Niche: 10,
+            rate20Global: 10,
+            rate20InCountry: 10,
+            rate20OffShore: 10,
           },
         ],
       })
@@ -89,14 +92,6 @@ function RoleForm() {
 
   const editRate = useCallback(
     (index, changes) => {
-      // a num field is `null` but user trying to increase/decrease it
-      // start with 0
-      for (const key in changes) {
-        if (isNaN(changes[key])) {
-          changes[key] = 0;
-        }
-      }
-      // apply changes
       dispatch(
         setModalRole({
           ...roleState,
@@ -194,8 +189,10 @@ function RoleForm() {
           id="skills"
           name="skills"
           placeholder="Search skills..."
+          enforceListOnlySelection={true}
           onChange={(val) => addSkill(val)}
           onInputChange={(val) => setTypeaheadInputValue(val)}
+          minLengthForSuggestions={1} // retrieve suggestions with min. 1 characters. Useful for skills like "C"
           value={typeaheadInputValue}
           getSuggestions={searchSkills}
           targetProp="name"
@@ -223,8 +220,11 @@ function RoleForm() {
           <IntegerField
             className={styles.number}
             name="numberOfMembers"
+            minValue={1}
+            readOnly={false}
+            displayButtons={false}
             value={roleState.numberOfMembers}
-            onChange={(num) => onChange({ numberOfMembers: num })}
+            onInputChange={(val) => onChange({ numberOfMembers: val })}
           />
         </div>
         <div className={styles.cell}>
@@ -232,33 +232,96 @@ function RoleForm() {
           <IntegerField
             className={styles.number}
             name="numberOfMembersAvailable"
+            minValue={1}
+            readOnly={false}
+            displayButtons={false}
             value={roleState.numberOfMembersAvailable}
-            minValue={-32768}
-            maxValue={32767}
-            onChange={(num) => onChange({ numberOfMembersAvailable: num })}
-          />
-        </div>
-        <div className={styles.cell}>
-          <th>Time to Candidate</th>
-          <IntegerField
-            className={styles.number}
-            name="timeToCandidate"
-            value={roleState.timeToCandidate}
-            minValue={-32768}
-            maxValue={32767}
-            onChange={(num) => onChange({ timeToCandidate: num })}
+            onInputChange={(val) => onChange({ numberOfMembersAvailable: val })}
           />
         </div>
         <div className={styles.cell}>
           <th>Time to Interview</th>
-          <IntegerField
-            className={styles.number}
-            name="timeToInterview"
-            value={roleState.timeToInterview}
-            minValue={-32768}
-            maxValue={32767}
-            onChange={(num) => onChange({ timeToInterview: num })}
-          />
+          <div className={styles["input-container"]}>
+            {!!roleState.timeToInterview &&
+              humanReadableTimeToHours(roleState.timeToInterview) === 0 && (
+                <Popover
+                  className={styles.popup}
+                  stopClickPropagation={true}
+                  content={
+                    <>
+                      Example values:
+                      <ul>
+                        <li>12 hours</li>
+                        <li>3 days</li>
+                        <li>2 weeks</li>
+                        <li>2 weeks 3 days</li>
+                        <li>1 month</li>
+                        <li>...</li>
+                      </ul>
+                    </>
+                  }
+                  strategy="fixed"
+                >
+                  <IconExclamationMark className={styles.icon} />
+                </Popover>
+              )}
+            <input
+              className={cn(styles["text-input"], {
+                error:
+                  !!roleState.timeToInterview &&
+                  humanReadableTimeToHours(roleState.timeToInterview) === 0,
+              })}
+              name="timeToInterview"
+              value={roleState.timeToInterview}
+              onChange={(event) =>
+                onChange({
+                  timeToInterview: event.target.value,
+                })
+              }
+            />
+          </div>
+        </div>
+        <div className={styles.cell}>
+          <th>Time to Candidate</th>
+          <div className={styles["input-container"]}>
+            {!!roleState.timeToCandidate &&
+              humanReadableTimeToHours(roleState.timeToCandidate) === 0 && (
+                <Popover
+                  className={styles.popup}
+                  stopClickPropagation={true}
+                  content={
+                    <>
+                      Example values:
+                      <ul>
+                        <li>12 hours</li>
+                        <li>3 days</li>
+                        <li>2 weeks</li>
+                        <li>2 weeks 3 days</li>
+                        <li>1 month</li>
+                        <li>...</li>
+                      </ul>
+                    </>
+                  }
+                  strategy="fixed"
+                >
+                  <IconExclamationMark className={styles.icon} />
+                </Popover>
+              )}
+            <input
+              className={cn(styles["text-input"], {
+                error:
+                  !!roleState.timeToCandidate &&
+                  humanReadableTimeToHours(roleState.timeToCandidate) === 0,
+              })}
+              name="timeToCandidate"
+              value={roleState.timeToCandidate}
+              onChange={(event) =>
+                onChange({
+                  timeToCandidate: event.target.value,
+                })
+              }
+            />
+          </div>
         </div>
       </div>
       <label htmlFor="">
@@ -281,43 +344,67 @@ function RoleForm() {
               {i === expandedRateIdx && (
                 <div className={styles["rate-content"]}>
                   <div className={styles["col-group"]}>
-                    <th>Global</th>
-                    <th>In Country</th>
-                    <th>Offshore</th>
-                    <th>Niche</th>
+                    <th>
+                      <div>Global</div>
+                      <div className={styles["time-unit"]}>/week</div>
+                    </th>
+                    <th>
+                      <div>In Country</div>
+                      <div className={styles["time-unit"]}>/week</div>
+                    </th>
+                    <th>
+                      <div>Offshore</div>
+                      <div className={styles["time-unit"]}>/week</div>
+                    </th>
+                    <th>
+                      <div>Niche</div>
+                      <div className={styles["time-unit"]}>/week</div>
+                    </th>
                   </div>
                   <div className={styles["content-group"]}>
                     <IntegerField
                       className={cn(styles.number, styles.cell)}
                       name={`rate[${i}]-global-rate`}
                       value={roleState.rates[i].global}
-                      minValue={-32768}
-                      maxValue={32767}
-                      onChange={(num) => editRate(i, { global: num })}
+                      minValue={1}
+                      readOnly={false}
+                      displayButtons={false}
+                      onInputChange={(num) =>
+                        editRate(i, { global: num || undefined })
+                      }
                     />
                     <IntegerField
                       className={cn(styles.number, styles.cell)}
                       name={`rate[${i}]-inCountry-rate`}
                       value={roleState.rates[i].inCountry}
-                      minValue={-32768}
-                      maxValue={32767}
-                      onChange={(num) => editRate(i, { inCountry: num })}
+                      minValue={1}
+                      readOnly={false}
+                      displayButtons={false}
+                      onInputChange={(num) =>
+                        editRate(i, { inCountry: num || undefined })
+                      }
                     />
                     <IntegerField
                       className={cn(styles.number, styles.cell)}
                       name={`rate[${i}]-offShore-rate`}
                       value={roleState.rates[i].offShore}
-                      minValue={-32768}
-                      maxValue={32767}
-                      onChange={(num) => editRate(i, { offShore: num })}
+                      minValue={1}
+                      readOnly={false}
+                      displayButtons={false}
+                      onInputChange={(num) =>
+                        editRate(i, { offShore: num || undefined })
+                      }
                     />
                     <IntegerField
                       className={cn(styles.number, styles.cell)}
                       name={`rate[${i}]-niche-rate`}
                       value={roleState.rates[i].niche}
-                      minValue={-32768}
-                      maxValue={32767}
-                      onChange={(num) => editRate(i, { niche: num })}
+                      minValue={1}
+                      readOnly={false}
+                      displayButtons={false}
+                      onInputChange={(num) =>
+                        editRate(i, { niche: num || undefined })
+                      }
                     />
                   </div>
                   <th>Rate 30</th>
@@ -326,33 +413,45 @@ function RoleForm() {
                       className={cn(styles.number, styles.cell)}
                       name={`rate[${i}]-rate30-global-rate`}
                       value={roleState.rates[i].rate30Global}
-                      minValue={-32768}
-                      maxValue={32767}
-                      onChange={(num) => editRate(i, { rate30Global: num })}
+                      minValue={1}
+                      readOnly={false}
+                      displayButtons={false}
+                      onInputChange={(num) =>
+                        editRate(i, { rate30Global: num || undefined })
+                      }
                     />
                     <IntegerField
                       className={cn(styles.number, styles.cell)}
                       name={`rate[${i}]-rate30-inCountry-rate`}
                       value={roleState.rates[i].rate30InCountry}
-                      minValue={-32768}
-                      maxValue={32767}
-                      onChange={(num) => editRate(i, { rate30InCountry: num })}
+                      minValue={1}
+                      readOnly={false}
+                      displayButtons={false}
+                      onInputChange={(num) =>
+                        editRate(i, { rate30InCountry: num || undefined })
+                      }
                     />
                     <IntegerField
                       className={cn(styles.number, styles.cell)}
                       name={`rate[${i}]-rate30-offShore-rate`}
                       value={roleState.rates[i].rate30OffShore}
-                      minValue={-32768}
-                      maxValue={32767}
-                      onChange={(num) => editRate(i, { rate30OffShore: num })}
+                      minValue={1}
+                      readOnly={false}
+                      displayButtons={false}
+                      onInputChange={(num) =>
+                        editRate(i, { rate30OffShore: num || undefined })
+                      }
                     />
                     <IntegerField
                       className={cn(styles.number, styles.cell)}
                       name={`rate[${i}]-rate30-niche-rate`}
                       value={roleState.rates[i].rate30Niche}
-                      minValue={-32768}
-                      maxValue={32767}
-                      onChange={(num) => editRate(i, { rate30Niche: num })}
+                      minValue={1}
+                      readOnly={false}
+                      displayButtons={false}
+                      onInputChange={(num) =>
+                        editRate(i, { rate30Niche: num || undefined })
+                      }
                     />
                   </div>
                   <th>Rate 20</th>
@@ -361,33 +460,45 @@ function RoleForm() {
                       className={cn(styles.number, styles.cell)}
                       name={`rate[${i}]-rate20-global-rate`}
                       value={roleState.rates[i].rate20Global}
-                      minValue={-32768}
-                      maxValue={32767}
-                      onChange={(num) => editRate(i, { rate20Global: num })}
+                      minValue={1}
+                      readOnly={false}
+                      displayButtons={false}
+                      onInputChange={(num) =>
+                        editRate(i, { rate20Global: num || undefined })
+                      }
                     />
                     <IntegerField
                       className={cn(styles.number, styles.cell)}
                       name={`rate[${i}]-rate20-inCountry-rate`}
                       value={roleState.rates[i].rate20InCountry}
-                      minValue={-32768}
-                      maxValue={32767}
-                      onChange={(num) => editRate(i, { rate20InCountry: num })}
+                      minValue={1}
+                      readOnly={false}
+                      displayButtons={false}
+                      onInputChange={(num) =>
+                        editRate(i, { rate20InCountry: num || undefined })
+                      }
                     />
                     <IntegerField
                       className={cn(styles.number, styles.cell)}
                       name={`rate[${i}]-rate20-offShore-rate`}
                       value={roleState.rates[i].rate20OffShore}
-                      minValue={-32768}
-                      maxValue={32767}
-                      onChange={(num) => editRate(i, { rate20OffShore: num })}
+                      minValue={1}
+                      readOnly={false}
+                      displayButtons={false}
+                      onInputChange={(num) =>
+                        editRate(i, { rate20OffShore: num || undefined })
+                      }
                     />
                     <IntegerField
                       className={cn(styles.number, styles.cell)}
                       name={`rate[${i}]-rate20-niche-rate`}
                       value={roleState.rates[i].rate20Niche}
-                      minValue={-32768}
-                      maxValue={32767}
-                      onChange={(num) => editRate(i, { rate20Niche: num })}
+                      minValue={1}
+                      readOnly={false}
+                      displayButtons={false}
+                      onInputChange={(num) =>
+                        editRate(i, { rate20Niche: num || undefined })
+                      }
                     />
                   </div>
                   <button

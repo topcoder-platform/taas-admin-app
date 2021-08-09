@@ -74,6 +74,8 @@ const selectComponents = {
  * @param {function} props.onChange function called when value changes
  * @param {function} [props.onInputChange] function called when input value changes
  * @param {function} [props.onBlur] function called on input blur
+ * @param {number} [props.minLengthForSuggestions] the minimum string lenth for displaying suggestions (default 3)
+ * @param {Boolean} [props.enforceListOnlySelection] enforces user to select from the list - manual inputs (if not in the list) won't affect the selection
  * @param {string} props.value input value
  * @param {function} props.getSuggestions the function to get suggestions
  * @param {string} props.targetProp the target property of the returned object from getSuggestions
@@ -87,6 +89,8 @@ const Typeahead = ({
   onChange,
   onInputChange,
   onBlur,
+  minLengthForSuggestions = 3,
+  enforceListOnlySelection = false,
   placeholder,
   value,
   getSuggestions,
@@ -139,7 +143,12 @@ const Typeahead = ({
         setIsMenuFocused(false);
         setIsMenuOpen(false);
         setIsLoading(false);
-        onChange(inputValue);
+        // fire onChange event
+        // - if `enforceListOnlySelection` is not set,
+        // - or if it's set and options list contains the value
+        if (!enforceListOnlySelection || options.includes(inputValue)) {
+          onChange(inputValue);
+        }
       }
     } else if (key === "ArrowDown") {
       if (!isMenuFocused) {
@@ -158,7 +167,12 @@ const Typeahead = ({
   const onSelectBlur = () => {
     setIsMenuFocused(false);
     setIsMenuOpen(false);
-    onChange(inputValue);
+    // fire onChange event
+    // - if `enforceListOnlySelection` is not set,
+    // - or if it's set and options list contains the value
+    if (!enforceListOnlySelection || options.includes(inputValue)) {
+      onChange(inputValue);
+    }
     onBlur && onBlur();
   };
 
@@ -170,11 +184,10 @@ const Typeahead = ({
         }
         setIsLoading(true);
         setIsMenuOpen(true);
-        const options = await loadSuggestions(
-          getSuggestions,
-          value,
-          targetProp
-        );
+        const options =
+          value.length < minLengthForSuggestions
+            ? [] // no suggestions yet if value length is less than `minLengthForSuggestions`
+            : await loadSuggestions(getSuggestions, value, targetProp);
         if (!isChangeAppliedRef.current) {
           setOptions(options);
           setIsLoading(false);
@@ -233,9 +246,6 @@ const Typeahead = ({
 
 const loadSuggestions = async (getSuggestions, inputValue, targetProp) => {
   let options = [];
-  if (inputValue.length < 3) {
-    return options;
-  }
   try {
     const res = await getSuggestions(inputValue);
     const items = res.data.slice(0, 100);
@@ -266,6 +276,8 @@ Typeahead.propTypes = {
   onChange: PT.func.isRequired,
   onInputChange: PT.func,
   onBlur: PT.func,
+  minLengthForSuggestions: PT.number,
+  enforceListOnlySelection: PT.bool,
   placeholder: PT.string,
   value: PT.oneOfType([PT.number, PT.string]),
   getSuggestions: PT.func,
