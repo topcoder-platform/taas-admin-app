@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import omit from "lodash/omit";
 import withAuthentication from "hoc/withAuthentication";
+import { humanReadableTimeToHours, hoursToHumanReadableTime } from "utils/misc";
 import {
   setFilter,
   setIsModalOpen,
@@ -59,10 +60,10 @@ const Roles = () => {
       setModalRole({
         listOfSkills: [],
         rates: [],
-        numberOfMembers: 0,
-        numberOfMembersAvailable: 0,
-        timeToCandidate: 0,
-        timeToInterview: 0,
+        numberOfMembers: 1,
+        numberOfMembersAvailable: 1,
+        timeToInterview: "1 week",
+        timeToCandidate: "2 weeks",
       })
     );
     dispatch(setIsModalOpen(true));
@@ -72,7 +73,13 @@ const Roles = () => {
     (role) => {
       setModalOperationType("EDIT");
       dispatch(setModalError(null));
-      dispatch(setModalRole(role));
+      dispatch(
+        setModalRole({
+          ...role,
+          timeToInterview: hoursToHumanReadableTime(role.timeToInterview),
+          timeToCandidate: hoursToHumanReadableTime(role.timeToCandidate),
+        })
+      );
       dispatch(setIsModalOpen(true));
     },
     [dispatch]
@@ -95,17 +102,28 @@ const Roles = () => {
       dispatch(
         updateRole(
           modalRole.id,
-          omit(modalRole, [
-            "id",
-            "createdBy",
-            "updatedBy",
-            "createdAt",
-            "updatedAt",
-          ])
+          omit(
+            {
+              ...modalRole,
+              timeToInterview: humanReadableTimeToHours(
+                modalRole.timeToInterview
+              ),
+              timeToCandidate: humanReadableTimeToHours(
+                modalRole.timeToCandidate
+              ),
+            },
+            ["id", "createdBy", "updatedBy", "createdAt", "updatedAt"]
+          )
         )
       );
     } else {
-      dispatch(createRole(modalRole));
+      dispatch(
+        createRole({
+          ...modalRole,
+          timeToInterview: humanReadableTimeToHours(modalRole.timeToInterview),
+          timeToCandidate: humanReadableTimeToHours(modalRole.timeToCandidate),
+        })
+      );
     }
   }, [dispatch, modalOperationType, modalRole]);
 

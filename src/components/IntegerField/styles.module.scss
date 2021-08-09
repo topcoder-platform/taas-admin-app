@@ -19,6 +19,11 @@ input.input {
   outline: none !important;
   box-shadow: none !important;
   text-align: center;
+  appearance: textfield;
+  &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 
   &:disabled {
     border-color: $control-disabled-border-color;
@@ -93,4 +98,18 @@ input.input {
     width: 1px;
     height: 9px;
   }
+}
+
+.popup {
+  margin-right: 5px;
+  max-width: 400px;
+  max-height: 200px;
+  line-height: $line-height-px;
+  white-space: normal;
+}
+
+.icon {
+  padding-top: 1px;
+  width: 15px;
+  height: 15px;
 }
