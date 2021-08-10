@@ -1,4 +1,6 @@
+import keys from "lodash/keys";
 import moment from "moment";
+import { formatPlural } from "./formatters";
 
 /**
  * Returns working periods filtered by start date.
@@ -175,6 +177,64 @@ export const negate = (value) => !value;
 export const noop = () => {};
 
 /**
+ * Converts a human-readable time string to hours.
+ * E.g.
+ * "2 weeks" => 336
+ * "3 days" => 72
+ *
+ * @param {string} timeStr human-readable time (e.g. "1 weeks", "2 hours", "2 weeks 3 days")
+ * @return {Number} the time in hours
+ */
+export const humanReadableTimeToHours = (timeStr) => {
+  // units with corresponding hours
+  const units = {
+    hour: 1,
+    day: 24,
+    week: 7 * 24,
+    month: 30 * 24,
+  };
+
+  let timeHrs = 0;
+  const tokens = timeStr.toLowerCase().split(" ");
+  keys(units).forEach((u) => {
+    const tokenIdx = tokens.findIndex((token) => token.includes(u));
+    if (tokenIdx > 0) {
+      const unitHrs = units[u];
+      const tokenTimeMs = +tokens[tokenIdx - 1] * unitHrs;
+      timeHrs += tokenTimeMs;
+    }
+  });
+  return timeHrs;
+};
+
+/**
+ * Converts a time (in hours) to human-readable string.
+ *
+ * @param {Number} timeHrs the time in hours
+ * @return {string} human-readable time string ("1 week", "2 weeks 3 days", etc.)
+ */
+export const hoursToHumanReadableTime = (timeHrs) => {
+  // to preserve the order of keys, we need to use array in loop/iterations
+  const units = [
+    { key: "month", value: 30 * 24 },
+    { key: "week", value: 7 * 24 },
+    { key: "day", value: 24 },
+    { key: "hour", value: 1 },
+  ];
+
+  let timeStr = "";
+  for (const unit of units) {
+    const division = Math.floor(timeHrs / unit.value);
+    if (division >= 1) {
+      timeStr += timeStr !== "" ? " " : "";
+      timeStr += formatPlural(division, unit.key);
+    }
+    timeHrs -= division * unit.value;
+  }
+  return timeStr;
+};
+
+/**
  * Checks if the provided value is a valid payment amount. It can be a number
  * or a string that can be converted to number.
  *
@@ -193,3 +253,4 @@ export function validateAmount(value) {
     amount < 1e5
   );
 }
+
