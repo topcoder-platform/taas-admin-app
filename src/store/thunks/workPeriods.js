@@ -12,6 +12,7 @@ import {
   API_CHALLENGE_PAYMENT_STATUS,
 } from "constants/workPeriods";
 import {
+  delay,
   extractResponseData,
   extractResponsePagination,
   replaceItems,
@@ -33,25 +34,38 @@ import {
 import { RESOURCE_BOOKING_STATUS, WORK_PERIODS_PATH } from "constants/index.js";
 import { currencyFormatter } from "utils/formatters";
 
-export const loadWorkPeriodAfterPaymentCancel =
-  (periodId, paymentId) => async (dispatch, getState) => {
-    let [periodsData] = selectors.getWorkPeriodsData(getState());
-    periodsData[periodId]?.cancelSource?.cancel();
-    const [promise, source] = services.fetchWorkPeriod(periodId);
-    dispatch(actions.setWorkPeriodDataPending(periodId, source));
-    let periodData = null;
-    let userHandle = null;
-    let errorMessage = null;
-    try {
-      const data = await promise;
-      periodData = normalizePeriodData(data);
-      userHandle = data.userHandle;
-    } catch (error) {
-      if (!axios.isCancel(error)) {
-        errorMessage = error.toString();
-      }
+export const loadWorkPeriodData = (periodId) => async (dispatch, getState) => {
+  let [periodsData] = selectors.getWorkPeriodsData(getState());
+  periodsData[periodId]?.cancelSource?.cancel();
+  const [promise, source] = services.fetchWorkPeriod(periodId);
+  dispatch(actions.setWorkPeriodDataPending(periodId, source));
+  let userHandle = null;
+  let periodData = null;
+  let errorMessage = null;
+  try {
+    const data = await promise;
+    userHandle = data.userHandle;
+    periodData = normalizePeriodData(data);
+  } catch (error) {
+    if (!axios.isCancel(error)) {
+      errorMessage = error.toString();
     }
+  }
+  if (periodData) {
+    dispatch(actions.setWorkPeriodDataSuccess(periodId, periodData));
+    return [{ ...periodData, userHandle }, null];
+  } else if (errorMessage) {
+    dispatch(actions.setWorkPeriodDataError(periodId, errorMessage));
+    return [null, errorMessage];
+  }
+  return [null, null];
+};
+
+export const loadWorkPeriodAfterPaymentCancel =
+  (periodId, paymentId) => async (dispatch) => {
+    let [periodData, error] = await dispatch(loadWorkPeriodData(periodId));
     if (periodData) {
+      let userHandle = periodData.userHandle;
       let amount = null;
       for (let payment of periodData.payments) {
         if (payment.id === paymentId) {
@@ -59,16 +73,12 @@ export const loadWorkPeriodAfterPaymentCancel =
           break;
         }
       }
-      dispatch(actions.setWorkPeriodDataSuccess(periodId, periodData));
       makeToast(
         `Payment ${amount} for ${userHandle} was marked as "cancelled"`,
         "success"
       );
-    } else if (errorMessage) {
-      dispatch(actions.setWorkPeriodDataError(periodId, errorMessage));
-      makeToast(
-        `Failed to load data for working period ${periodId}.\n` + errorMessage
-      );
+    } else if (error) {
+      makeToast("Failed to reload working period data. " + error);
     }
   };
 
@@ -236,6 +246,72 @@ export const toggleWorkPeriodDetails =
     } else {
       dispatch(actions.hideWorkPeriodDetails(period.id));
     }
+  };
+
+/**
+ * A thunk that updates the billing accounts for all the payments from the
+ * specific working period.
+ *
+ * @param {string} periodId working period id
+ * @param {number} billingAccountId desired billing account id
+ * @param {number} [periodDataDelay] timeout after which the period data gets
+ * reloaded
+ * @returns {function}
+ */
+export const updatePaymentsBillingAccount =
+  (periodId, billingAccountId, periodDataDelay = 3000) =>
+  async (dispatch, getState) => {
+    let [periodsData] = selectors.getWorkPeriodsData(getState());
+    let periodData = periodsData[periodId];
+    if (!periodData) {
+      return;
+    }
+    let paymentsToUpdate = [];
+    for (let payment of periodData.payments) {
+      if (payment.billingAccountId !== billingAccountId) {
+        paymentsToUpdate.push({ id: payment.id, billingAccountId });
+      }
+    }
+    if (!paymentsToUpdate.length) {
+      makeToast(
+        "All payments have desired billing account. Nothing to update.",
+        "success"
+      );
+      return true;
+    }
+    let paymentsData = null;
+    let errorMessage = null;
+    try {
+      paymentsData = await services.patchWorkPeriodPayments(paymentsToUpdate);
+    } catch (error) {
+      errorMessage = error.toString();
+    }
+    if (errorMessage) {
+      makeToast(errorMessage);
+      return false;
+    }
+    await delay(periodDataDelay);
+    [periodData, errorMessage] = await dispatch(loadWorkPeriodData(periodId));
+    if (errorMessage) {
+      makeToast("Failed to reload payments' data. " + errorMessage);
+    } else if (periodData) {
+      paymentsData = periodData.payments;
+    }
+    let paymentsNotUpdated = [];
+    for (let payment of paymentsData) {
+      if (payment.billingAccountId !== billingAccountId) {
+        paymentsNotUpdated.push(payment);
+      }
+    }
+    if (paymentsNotUpdated.length) {
+      makeToast("Could not update billing account for some payments.");
+      return false;
+    }
+    makeToast(
+      "Billing account was successfully updated for all the payments.",
+      "success"
+    );
+    return true;
   };
 
 /**

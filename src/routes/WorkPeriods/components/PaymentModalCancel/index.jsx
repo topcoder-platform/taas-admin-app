@@ -83,6 +83,7 @@ const PaymentModalCancel = ({ payment, removeModal, timeout = 3000 }) => {
       approveText="Mark as cancelled"
       dismissText="Cancel cancelling"
       title={title}
+      isDisabled={isCancelPending}
       isOpen={isModalOpen}
       controls={controls}
       onApprove={onApprove}
