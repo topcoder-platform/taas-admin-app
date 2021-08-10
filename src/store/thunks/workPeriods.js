@@ -423,3 +423,25 @@ const processPaymentsSpecific = async (dispatch, getState) => {
     makeToast(errorMessage);
   }
 };
+
+/**
+ * Sends request to process the payment and shows success or error toastrs.
+ *
+ * @param {string} workPeriodId working period id
+ * @param {number} amount the amount of payment
+ * @returns (function)
+ */
+export const processAdditionalPayment = (workPeriodId, amount) => async () => {
+  const promise = services.postWorkPeriodPayment({
+    workPeriodId,
+    days: 0,
+    amount,
+  });
+  try {
+    await promise;
+  } catch (error) {
+    makeToast(error.toString());
+    throw error;
+  }
+  makeToast("Additional payment scheduled for resource", "success");
+};

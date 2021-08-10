@@ -85,8 +85,8 @@ const Tooltip = ({
     <div
       className={cn(compStyles.container, className)}
       ref={containerRef}
-      onMouseEnter={isDisabled ? null : onMouseEnter}
-      onMouseLeave={isDisabled ? null : onMouseLeave}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       <span
         className={cn(compStyles.target, targetClassName)}
@@ -94,7 +94,7 @@ const Tooltip = ({
       >
         {children}
       </span>
-      {!isDisabled && isTooltipShown && (
+      {!isDisabled && isTooltipShown && !!content && (
         <div
           ref={setPopperElement}
           className={cn(compStyles.tooltip, tooltipClassName)}

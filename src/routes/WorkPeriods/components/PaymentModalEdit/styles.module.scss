@@ -1,0 +1,38 @@
+@import "styles/variables";
+@import "styles/mixins";
+
+.form {
+  margin: 20px 0 0;
+
+  table {
+    margin: 0 -6px;
+    width: 100%;
+    table-layout: auto;
+
+    @include desktop {
+      width: 75%;
+      margin-right: auto;
+    }
+  }
+
+  th,
+  td {
+    padding: 5px 6px;
+    white-space: nowrap;
+  }
+
+  th {
+    font-weight: bold;
+  }
+}
+
+.rates {
+  display: block;
+  height: 30px;
+  line-height: 30px;
+}
+
+.notice {
+  margin: 12px 0;
+  color: $warning-color;
+}

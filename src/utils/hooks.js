@@ -14,7 +14,10 @@ export const useClickOutside = (element, listener, deps) => {
     let onClick = null;
     if (element && listener) {
       onClick = (event) => {
-        if (!element.contains(event.target)) {
+        if (
+          document.contains(event.target) &&
+          !element.contains(event.target)
+        ) {
           listener();
         }
       };

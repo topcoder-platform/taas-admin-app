@@ -2,14 +2,21 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useCallback, useRef } from "react";
 import PT from "prop-types";
-import PaymentCancel from "../PaymentCancel";
+import PaymentActions from "../PaymentActions";
 import PaymentError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
 import { currencyFormatter, formatChallengeUrl } from "utils/formatters";
 import { PAYMENT_STATUS } from "constants/workPeriods";
 import styles from "./styles.module.scss";
 
-const PaymentsListItem = ({ item }) => {
+/**
+ * Displays the row in payments list table with information about specific
+ * payment.
+ *
+ * @param {Object} props component properties
+ * @returns {JSX.Element}
+ */
+const PaymentsListItem = ({ daysPaid, daysWorked, item }) => {
   const inputRef = useRef();
 
   const onCopyLinkClick = useCallback(() => {
@@ -60,13 +67,19 @@ const PaymentsListItem = ({ item }) => {
         </div>
       </td>
       <td className={styles.paymentCancel}>
-        <PaymentCancel item={item} />
+        <PaymentActions
+          daysPaid={daysPaid}
+          daysWorked={daysWorked}
+          payment={item}
+        />
       </td>
     </tr>
   );
 };
 
 PaymentsListItem.propTypes = {
+  daysPaid: PT.number.isRequired,
+  daysWorked: PT.number.isRequired,
   item: PT.shape({
     id: PT.oneOfType([PT.string, PT.number]).isRequired,
     amount: PT.number.isRequired,

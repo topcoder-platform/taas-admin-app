@@ -25,10 +25,11 @@ const selectComponents = { DropdownIndicator, IndicatorSeparator: () => null };
  * @param {string} props.id control's id
  * @param {boolean} [props.isDisabled] whether the control should be disabled
  * @param {string} [props.label] control's label
- * @param {(v: string) => void} props.onChange on change handler
+ * @param {string} [props.labelClassName] class name to be added to label element
+ * @param {(v: any) => void} props.onChange on change handler
  * @param {Object} props.options options for dropdown
  * @param {'medium'|'small'} [props.size] control's size
- * @param {string} props.value control's value
+ * @param {any} props.value control's value
  * @returns {JSX.Element}
  */
 const SelectField = ({
@@ -36,6 +37,7 @@ const SelectField = ({
   id,
   isDisabled = false,
   label,
+  labelClassName,
   onChange,
   options,
   size = "medium",
@@ -69,7 +71,7 @@ const SelectField = ({
       )}
     >
       {label && (
-        <label htmlFor={id} className={styles.label}>
+        <label htmlFor={id} className={cn(styles.label, labelClassName)}>
           {label}
         </label>
       )}
@@ -96,6 +98,7 @@ SelectField.propTypes = {
   id: PT.string.isRequired,
   isDisabled: PT.bool,
   label: PT.string,
+  labelClassName: PT.string,
   size: PT.oneOf(["medium", "small"]),
   onChange: PT.func.isRequired,
   options: PT.arrayOf(

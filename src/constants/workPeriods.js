@@ -53,6 +53,7 @@ export const API_REQUIRED_FIELDS = [
   "workPeriods.daysWorked",
   "workPeriods.daysPaid",
   "workPeriods.payments.amount",
+  "workPeriods.payments.billingAccountId",
   "workPeriods.payments.challengeId",
   "workPeriods.payments.createdAt",
   "workPeriods.payments.days",
@@ -126,6 +127,12 @@ export const API_CHALLENGE_PAYMENT_STATUS_MAP = {
   [API_CHALLENGE_PAYMENT_STATUS.SCHEDULED]: PAYMENT_STATUS.SCHEDULED,
 };
 
+export const CHALLENGE_PAYMENT_ACTIVE_STATUSES = {
+  [PAYMENT_STATUS.COMPLETED]: PAYMENT_STATUS.COMPLETED,
+  [PAYMENT_STATUS.IN_PROGRESS]: PAYMENT_STATUS.IN_PROGRESS,
+  [PAYMENT_STATUS.SCHEDULED]: PAYMENT_STATUS.SCHEDULED,
+};
+
 export const URL_QUERY_PARAM_MAP = new Map([
   ["startDate", "startDate"],
   ["paymentStatuses", "status"],
@@ -159,3 +166,5 @@ export const ALERT_MESSAGE_MAP = {
   [ALERT.BA_NOT_ASSIGNED]: "BA - Not Assigned",
   [ALERT.LAST_BOOKING_WEEK]: "Last Booking Week",
 };
+
+export const DAYS_WORKED_HARD_LIMIT = 10;
