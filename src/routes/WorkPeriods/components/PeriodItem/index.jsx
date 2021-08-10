@@ -116,11 +116,17 @@ const PeriodItem = ({
     [item.jobId]
   );
 
-  const projectId = useMemo(
+  const projectIdAndTeamName = useMemo(
     () => (
       <span className={styles.tooltipContent}>
         <span className={styles.tooltipLabel}>Project ID:</span>&nbsp;
         {item.projectId}
+        <br />
+        <span className={styles.tooltipLabel}>Team Name:</span>&nbsp;
+        <ProjectName
+          className={styles.tooltipProjectName}
+          projectId={item.projectId}
+        />
       </span>
     ),
     [item.projectId]
@@ -184,8 +190,14 @@ const PeriodItem = ({
           </Tooltip>
         </td>
         <td className={styles.teamName}>
-          <Tooltip content={projectId}>
-            <ProjectName projectId={item.projectId} />
+          <Tooltip
+            targetClassName={styles.projectNameContainer}
+            content={projectIdAndTeamName}
+          >
+            <ProjectName
+              className={styles.projectName}
+              projectId={item.projectId}
+            />
           </Tooltip>
         </td>
         <td className={styles.startDate}>{formatDate(item.bookingStart)}</td>
