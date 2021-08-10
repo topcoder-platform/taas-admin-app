@@ -39,7 +39,7 @@ export const createRole = (body) => async (dispatch) => {
     const role = extractResponseData(response);
     dispatch(actions.createRole(role));
     dispatch(actions.setIsModalOpen(false));
-    makeToast("Successfully craeted the role.", "success");
+    makeToast("Successfully created the role.", "success");
   } catch (error) {
     dispatch(
       actions.setModalError(`Failed to create the role.\n${error.toString()}`)
