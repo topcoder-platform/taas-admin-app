@@ -1,24 +1,6 @@
 @import "styles/variables";
 
 .container {
-  display: flex;
-  align-items: baseline;
-}
-
-.iconPlaceholder {
-  align-self: center;
-  margin-right: 10px;
-  width: 30px;
-  height: 30px;
-}
-
-.checkmarkIcon {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.daysWorkedControl {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -51,20 +33,6 @@ input.input {
     ~ .btnPlus {
       cursor: not-allowed;
     }
-  }
-}
-
-.tooltip {
-  max-width: 400px;
-}
-
-.tooltipTarget {
-  display: block;
-  width: 100%;
-  height: 100%;
-
-  &.notAllowed {
-    cursor: not-allowed;
   }
 }
 
@@ -141,5 +109,20 @@ input.input {
       width: 1px;
       height: 9px;
     }
+  }
+}
+
+.tooltip {
+  max-width: 300px;
+  white-space: normal;
+}
+
+.tooltipTarget {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  &.notAllowed {
+    cursor: not-allowed;
   }
 }

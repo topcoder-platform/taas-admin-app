@@ -163,6 +163,44 @@ export const cancelWorkPeriodPayment = (paymentId) => {
 };
 
 /**
+ * Sends request to modify data for specific payment.
+ *
+ * @param {string} paymentId payment id
+ * @param {Object} payment payment data
+ * @returns {Promise}
+ */
+export const patchWorkPeriodPayment = (paymentId, payment) => {
+  return axios
+    .patch(`${PAYMENTS_API_URL}/${paymentId}`, payment)
+    .then(extractResponseData);
+};
+
+/**
+ * Sends request to modify payments' data for specific working period.
+ *
+ * @param {Array} payments
+ * @returns {Promise}
+ */
+export const patchWorkPeriodPayments = (payments) => {
+  return axios
+    .patch(`${PAYMENTS_API_URL}/bulk`, payments)
+    .then(extractResponseData);
+};
+
+/**
+ * Sends request to queue payment for specific working period.
+ *
+ * @param {Object} payment payment object
+ * @param {string} payment.workPeriodId working period id
+ * @param {number} payment.days number of days we're paying for
+ * @param {number|string} payment.amount the amount of payment
+ * @returns {Promise}
+ */
+export const postWorkPeriodPayment = (payment) => {
+  return axios.post(PAYMENTS_API_URL, payment).then(extractResponseData);
+};
+
+/**
  * Sends request to queue payments for specific working periods and amounts
  * inside the provided array.
  *
@@ -170,7 +208,9 @@ export const cancelWorkPeriodPayment = (paymentId) => {
  * @returns {Promise}
  */
 export const postWorkPeriodsPayments = (payments) => {
-  return axios.post(`${PAYMENTS_API_URL}/bulk`, payments).then(extractResponseData);
+  return axios
+    .post(`${PAYMENTS_API_URL}/bulk`, payments)
+    .then(extractResponseData);
 };
 
 /**

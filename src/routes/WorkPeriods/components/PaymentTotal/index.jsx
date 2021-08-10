@@ -14,6 +14,7 @@ import styles from "./styles.module.scss";
  * @param {Array} [props.payments] an array with payments information
  * @param {number} props.paymentTotal total paid sum
  * @param {number} props.daysPaid number of paid days
+ * @param {number} props.daysWorked number of days the user already worked
  * @param {'absolute'|'fixed'} [props.popupStrategy] popup positioning strategy
  * @returns {JSX.Element}
  */
@@ -22,13 +23,21 @@ const PaymentTotal = ({
   payments,
   paymentTotal,
   daysPaid,
+  daysWorked,
   popupStrategy = "absolute",
 }) => {
   const hasPayments = !!payments && !!payments.length;
 
   const paymentsList = useMemo(
-    () => (hasPayments ? <PaymentsList payments={payments} /> : null),
-    [hasPayments, payments]
+    () =>
+      hasPayments ? (
+        <PaymentsList
+          daysPaid={daysPaid}
+          daysWorked={daysWorked}
+          payments={payments}
+        />
+      ) : null,
+    [hasPayments, daysPaid, daysWorked, payments]
   );
 
   return (
@@ -55,6 +64,7 @@ PaymentTotal.propTypes = {
   payments: PT.array,
   paymentTotal: PT.number.isRequired,
   daysPaid: PT.number.isRequired,
+  daysWorked: PT.number.isRequired,
   popupStrategy: PT.oneOf(["absolute", "fixed"]),
 };
 

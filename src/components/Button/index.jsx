@@ -11,6 +11,8 @@ import styles from "./styles.module.scss";
  * @param {string} [props.className] class name added to root element
  * @param {'primary'|'primary-dark'|'primary-light'|'error'|'warning'} [props.color]
  * button color
+ * @param {Object|function} [props.innerRef] Ref object or function to accept the
+ * ref for <button> element
  * @param {boolean} [props.isDisabled] if button is disabled
  * @param {boolean} [props.isSelected] if button is selected
  * @param {string} [props.name] button name
@@ -26,6 +28,7 @@ const Button = ({
   children,
   className,
   color = "primary",
+  innerRef,
   isDisabled = false,
   isSelected = false,
   name,
@@ -40,6 +43,7 @@ const Button = ({
     data-value={value}
     disabled={isDisabled}
     name={name || ""}
+    ref={innerRef}
     type={type}
     className={cn(
       styles.button,
@@ -66,6 +70,7 @@ Button.propTypes = {
     "error",
     "warning",
   ]),
+  innerRef: PT.oneOfType([PT.object, PT.func]),
   isDisabled: PT.bool,
   isSelected: PT.bool,
   name: PT.string,

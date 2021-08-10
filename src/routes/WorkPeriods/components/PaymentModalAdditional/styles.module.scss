@@ -1,0 +1,12 @@
+@import "styles/mixins";
+
+.form {
+  margin-top: 20px;
+}
+
+.amountField,
+.amountError {
+  @include desktop {
+    width: 75%;
+  }
+}

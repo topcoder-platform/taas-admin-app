@@ -1,0 +1,76 @@
+@import "styles/variables";
+
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+.handle {
+  display: inline-flex;
+  align-items: center;
+}
+
+.iconArrowDown {
+  display: inline-block;
+  width: 12px;
+  height: 8px;
+  margin-left: 8px;
+}
+
+.handleMenuOpen {
+  .iconArrowDown {
+    transform: rotate(180deg);
+  }
+}
+
+.popover {
+  z-index: 100;
+  border-radius: 8px;
+  // min-width: 175px;
+  background-color: #fff;
+  box-shadow: 0px 5px 25px #c6c6c6;
+}
+
+.popoverArrow {
+  top: -9px;
+  border: 10px solid transparent;
+  border-top: none;
+  border-bottom-color: #fff;
+  width: 0;
+  height: 0;
+}
+
+.items {
+  padding: 16px;
+}
+
+.separator {
+  border-top: 1px solid #e7e7e7;
+  margin: 5px 0;
+}
+
+.item {
+  padding: 5px 0;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.8px;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: $primary-text-color;
+  cursor: pointer;
+}
+
+.danger {
+  color: #ef476f;
+}
+
+.itemDisabled {
+  color: gray;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.hidden {
+  display: none;
+}

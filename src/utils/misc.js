@@ -26,7 +26,7 @@ export function filterPeriodsByStartDate(periods, startDate) {
  * Returns the option which matches the provided value or null.
  *
  * @param {{ value: string, label: string }[]} options options object
- * @param {string} value value to search for
+ * @param {any} value value to search for
  * @returns {?{ value: string, label: string }}
  */
 export function getOptionByValue(options, value) {
@@ -162,3 +162,23 @@ export const increment = (value) => value + 1;
 export const negate = (value) => !value;
 
 export const noop = () => {};
+
+/**
+ * Checks if the provided value is a valid payment amount. It can be a number
+ * or a string that can be converted to number.
+ *
+ * @param {any} value payment amount
+ * @returns {boolean}
+ */
+export function validateAmount(value) {
+  let amount = +value;
+  let valueStr = value + "";
+  return (
+    !isNaN(amount) &&
+    (amount.toFixed(0) === valueStr ||
+      amount.toFixed(1) === valueStr ||
+      amount.toFixed(2) === valueStr) &&
+    amount > 0 &&
+    amount < 1e5
+  );
+}
