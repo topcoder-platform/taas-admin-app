@@ -1,6 +1,11 @@
-import moment from "moment";
+import moment from "moment-timezone";
 import isNumber from "lodash/isNumber";
-import { DATE_FORMAT_UI, PAYMENT_STATUS_LABELS } from "constants/workPeriods";
+import {
+  DATETIME_FORMAT_UI,
+  DATE_FORMAT_UI,
+  PAYMENT_STATUS_LABELS,
+  TIMEZONE_SOURCE,
+} from "constants/workPeriods";
 import {
   PLATFORM_WEBSITE_URL,
   TAAS_BASE_PATH,
@@ -27,6 +32,19 @@ export function formatChallengeUrl(challengeId) {
  */
 export function formatDate(date) {
   return date ? moment(date).format(DATE_FORMAT_UI) : "-";
+}
+
+const TIMEZONE_BROWSER = moment.tz.guess();
+
+/**
+ * Formats the date and time using the provided timezone.
+ *
+ * @param {*} dateTime value that can be parsed by Moment
+ * @param {string} [tz] timezone in which the resulting time will be displayed
+ * @returns {string}
+ */
+export function formatDateTimeInTimeZone(dateTime, tz = TIMEZONE_BROWSER) {
+  return moment.tz(dateTime, TIMEZONE_SOURCE).tz(tz).format(DATETIME_FORMAT_UI);
 }
 
 /**

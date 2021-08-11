@@ -253,4 +253,3 @@ export function validateAmount(value) {
     amount < 1e5
   );
 }
-

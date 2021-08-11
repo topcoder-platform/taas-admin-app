@@ -31,6 +31,9 @@ export const TAAS_TEAM_API_URL = `${API.V5}/taas-teams`;
 export const DATE_FORMAT_API = "YYYY-MM-DD";
 export const DATE_FORMAT_ISO = "YYYY-MM-DD";
 export const DATE_FORMAT_UI = "MMM DD, YYYY";
+export const DATETIME_FORMAT_UI = "MMM DD, YYYY h:mm a";
+
+export const TIMEZONE_SOURCE = "America/New_York";
 
 // Field names that are required to be retrieved for display, filtering and sorting.
 export const API_REQUIRED_FIELDS = [

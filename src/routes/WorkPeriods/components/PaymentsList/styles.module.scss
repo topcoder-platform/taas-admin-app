@@ -25,6 +25,7 @@ table.paymentsList {
         background: #f4f4f4;
 
         &:first-child,
+        &.createdAt,
         &.paymentStatus {
           text-align: left;
         }
