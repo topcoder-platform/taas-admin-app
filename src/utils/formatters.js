@@ -1,10 +1,9 @@
-import moment from "moment-timezone";
+import moment from "moment";
 import isNumber from "lodash/isNumber";
 import {
   DATETIME_FORMAT_UI,
   DATE_FORMAT_UI,
   PAYMENT_STATUS_LABELS,
-  TIMEZONE_SOURCE,
 } from "constants/workPeriods";
 import {
   PLATFORM_WEBSITE_URL,
@@ -34,17 +33,14 @@ export function formatDate(date) {
   return date ? moment(date).format(DATE_FORMAT_UI) : "-";
 }
 
-const TIMEZONE_BROWSER = moment.tz.guess();
-
 /**
- * Formats the date and time using the provided timezone.
+ * Formats the provided time in UTC-0 as time in local timezone.
  *
- * @param {*} dateTime value that can be parsed by Moment
- * @param {string} [tz] timezone in which the resulting time will be displayed
+ * @param {number} dateTime number of milliseconds since UTC epoch
  * @returns {string}
  */
-export function formatDateTimeInTimeZone(dateTime, tz = TIMEZONE_BROWSER) {
-  return moment.tz(dateTime, TIMEZONE_SOURCE).tz(tz).format(DATETIME_FORMAT_UI);
+export function formatDateTimeAsLocal(dateTime) {
+  return moment(dateTime).format(DATETIME_FORMAT_UI);
 }
 
 /**

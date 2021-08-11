@@ -8,7 +8,7 @@ import PaymentStatus from "../PaymentStatus";
 import {
   currencyFormatter,
   formatChallengeUrl,
-  formatDateTimeInTimeZone,
+  formatDateTimeAsLocal,
 } from "utils/formatters";
 import { PAYMENT_STATUS } from "constants/workPeriods";
 import styles from "./styles.module.scss";
@@ -60,7 +60,7 @@ const PaymentsListItem = ({ daysPaid, daysWorked, item }) => {
       <td className={styles.days}>{item.days}</td>
       <td className={styles.amount}>{currencyFormatter.format(item.amount)}</td>
       <td className={styles.createdAt}>
-        {formatDateTimeInTimeZone(item.createdAt)}
+        {formatDateTimeAsLocal(item.createdAt)}
       </td>
       <td className={styles.paymentStatus}>
         <div className={styles.statusWithError}>

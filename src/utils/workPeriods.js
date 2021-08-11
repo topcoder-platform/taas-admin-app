@@ -1,4 +1,4 @@
-import moment from "moment-timezone";
+import moment from "moment";
 import {
   ALERT,
   API_CHALLENGE_PAYMENT_STATUS_MAP,
@@ -6,7 +6,6 @@ import {
   DATE_FORMAT_ISO,
   PAYMENT_STATUS,
   REASON_DISABLED,
-  TIMEZONE_SOURCE,
   URL_QUERY_PARAM_MAP,
 } from "constants/workPeriods";
 
@@ -230,7 +229,7 @@ export function normalizePeriodData(period) {
 export function normalizePeriodPayments(payments, data) {
   let lastFailedPayment = null;
   for (let payment of payments) {
-    payment.createdAt = moment.tz(payment.createdAt, TIMEZONE_SOURCE).valueOf();
+    payment.createdAt = moment.utc(payment.createdAt).valueOf();
     payment.status = normalizeChallengePaymentStatus(payment.status);
     if (payment.status === PAYMENT_STATUS.FAILED) {
       lastFailedPayment = payment;
