@@ -315,6 +315,11 @@ export const setWorkPeriodPaymentData = (paymentData) => ({
   payload: paymentData,
 });
 
+export const setWorkPeriodPayments = (periodId, payments) => ({
+  type: ACTION_TYPE.WP_SET_PERIOD_PAYMENTS,
+  payload: { periodId, payments },
+});
+
 /**
  * Creates an action to change working days for specific working period.
  *

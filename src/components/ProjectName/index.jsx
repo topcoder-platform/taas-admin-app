@@ -13,11 +13,7 @@ const ProjectName = ({ className, projectId }) => {
 
   const projectName = getName(projectId) || projectId;
 
-  return (
-    <span className={cn(styles.container, className)} title={projectName}>
-      {projectName}
-    </span>
-  );
+  return <span className={cn(styles.container, className)}>{projectName}</span>;
 };
 
 ProjectName.propTypes = {

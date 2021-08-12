@@ -31,6 +31,7 @@ export const TAAS_TEAM_API_URL = `${API.V5}/taas-teams`;
 export const DATE_FORMAT_API = "YYYY-MM-DD";
 export const DATE_FORMAT_ISO = "YYYY-MM-DD";
 export const DATE_FORMAT_UI = "MMM DD, YYYY";
+export const DATETIME_FORMAT_UI = "MMM DD, YYYY h:mm a";
 
 // Field names that are required to be retrieved for display, filtering and sorting.
 export const API_REQUIRED_FIELDS = [
@@ -166,5 +167,7 @@ export const ALERT_MESSAGE_MAP = {
   [ALERT.BA_NOT_ASSIGNED]: "BA - Not Assigned",
   [ALERT.LAST_BOOKING_WEEK]: "Last Booking Week",
 };
+
+export const SERVER_DATA_UPDATE_DELAY = 3000;
 
 export const DAYS_WORKED_HARD_LIMIT = 10;

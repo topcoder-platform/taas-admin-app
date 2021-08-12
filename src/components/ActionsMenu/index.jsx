@@ -14,6 +14,7 @@ import compStyles from "./styles.module.scss";
  * @param {Object} props component properties
  * @param {'primary'|'error'|'warning'} [props.handleColor] menu handle color
  * @param {'small'|'medium'} [props.handleSize] menu handle size
+ * @param {string} [props.handleText] text to show inside menu handle
  * @param {Array} props.items menu items
  * @param {'absolute'|'fixed'} [props.popupStrategy] popup positioning strategy
  * @param {boolean} [props.stopClickPropagation] whether to stop click event propagation
@@ -22,6 +23,7 @@ import compStyles from "./styles.module.scss";
 const ActionsMenu = ({
   handleColor = "primary",
   handleSize = "small",
+  handleText,
   items = [],
   popupStrategy = "absolute",
   stopClickPropagation = false,
@@ -89,6 +91,7 @@ const ActionsMenu = ({
       <Button
         color={handleColor}
         size={handleSize}
+        style={handleText ? "rounded" : "circle"}
         variant="contained"
         onClick={isOpen ? null : toggleMenu}
         className={cn(compStyles.handle, {
@@ -96,7 +99,8 @@ const ActionsMenu = ({
         })}
         innerRef={setReferenceElement}
       >
-        Actions <IconArrowDown className={compStyles.iconArrowDown} />
+        {handleText ? <span>{handleText}&nbsp;</span> : null}
+        <IconArrowDown className={compStyles.iconArrowDown} />
       </Button>
       {isOpen && (
         <Menu
@@ -113,6 +117,7 @@ const ActionsMenu = ({
 ActionsMenu.propTypes = {
   handleColor: PT.oneOf(["primary", "error", "warning"]),
   handleSize: PT.oneOf(["small", "medium"]),
+  handleText: PT.string,
   items: PT.arrayOf(
     PT.shape({
       label: PT.string,

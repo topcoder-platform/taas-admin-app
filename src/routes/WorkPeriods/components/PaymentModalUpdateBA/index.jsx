@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import PT from "prop-types";
 import cn from "classnames";
 import moment from "moment";
@@ -7,11 +8,8 @@ import Modal from "components/Modal";
 import ProjectName from "components/ProjectName";
 import Spinner from "components/Spinner";
 import SelectField from "components/SelectField";
-import { makeToast } from "components/ToastrMessage";
-import {
-  fetchBillingAccounts,
-  patchWorkPeriodPayments,
-} from "services/workPeriods";
+import { fetchBillingAccounts } from "services/workPeriods";
+import { updatePaymentsBillingAccount } from "store/thunks/workPeriods";
 import {
   createAssignedBillingAccountOption,
   normalizeBillingAccounts,
@@ -42,6 +40,21 @@ const PaymentModalUpdateBA = ({ payments = [], period, removeModal }) => {
   const [billingAccountsDisabled, setBillingAccountsDisabled] = useState(true);
   const [billingAccountsError, setBillingAccountsError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const dispatch = useDispatch();
+
+  const accountIdMap = {};
+  for (let payment of payments) {
+    accountIdMap[payment.billingAccountId] = true;
+  }
+  const accountIds = Object.keys(accountIdMap);
+
+  const onApprove = useCallback(() => {
+    setIsProcessing(true);
+  }, []);
+
+  const onDismiss = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
 
   useEffect(() => {
     const [bilAccsPromise] = fetchBillingAccounts(period.projectId);
@@ -93,38 +106,14 @@ const PaymentModalUpdateBA = ({ payments = [], period, removeModal }) => {
     if (!isProcessing) {
       return;
     }
-    const paymentsUpdated = [];
-    for (let { id } of payments) {
-      paymentsUpdated.push({ id, billingAccountId });
-    }
-    patchWorkPeriodPayments(paymentsUpdated)
-      .then(() => {
-        makeToast(
-          "Billing account was successfully updated for all the payments",
-          "success"
-        );
-        setIsModalOpen(false);
-      })
-      .catch((error) => {
-        makeToast(error.toString());
-      })
-      .finally(() => {
-        setIsProcessing(false);
-      });
-  }, [billingAccountId, isProcessing, payments, period.id]);
-
-  const onApprove = useCallback(() => {
-    setIsProcessing(true);
-  }, []);
-
-  const onDismiss = useCallback(() => {
-    setIsModalOpen(false);
-  }, []);
-
-  const accountIdsHash = {};
-  for (let payment of payments) {
-    accountIdsHash[payment.billingAccountId] = true;
-  }
+    (async function () {
+      let ok = await dispatch(
+        updatePaymentsBillingAccount(period.id, billingAccountId)
+      );
+      setIsModalOpen(!ok);
+      setIsProcessing(false);
+    })();
+  }, [billingAccountId, isProcessing, period.id, dispatch]);
 
   return (
     <Modal
@@ -181,7 +170,7 @@ const PaymentModalUpdateBA = ({ payments = [], period, removeModal }) => {
                 <tr>
                   <th>Current BA(s) used:</th>
                   <td className={styles.accountIds}>
-                    {Object.keys(accountIdsHash).join(", ") || "-"}
+                    {accountIds.join(", ") || "-"}
                   </td>
                 </tr>
               </tbody>

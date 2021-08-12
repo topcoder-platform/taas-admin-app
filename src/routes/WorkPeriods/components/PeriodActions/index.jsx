@@ -13,38 +13,37 @@ import styles from "./styles.module.scss";
  * @returns {JSX.Element}
  */
 const PeriodActions = ({ className, period, periodData }) => {
-  const [isAddPaymentModalOpen, setIsAddPaymentModalOpen] = useState(false);
-  const [isUpdateBAModalOpen, setIsUpdateBAModalOpen] = useState(false);
+  const [isOpenAddPaymentModal, setIsOpenAddPaymentModal] = useState(false);
+  const [isOpenUpdateBAModal, setIsOpenUpdateBAModal] = useState(false);
   const payments = periodData.payments;
 
-  const openAddPaymentModal = useCallback(() => {
-    setIsAddPaymentModalOpen(true);
-  }, []);
-
   const closeAddPaymentModal = useCallback(() => {
-    setIsAddPaymentModalOpen(false);
-  }, []);
-
-  const openUpdateBAModal = useCallback(() => {
-    setIsUpdateBAModalOpen(true);
+    setIsOpenAddPaymentModal(false);
   }, []);
 
   const closeUpdateBAModal = useCallback(() => {
-    setIsUpdateBAModalOpen(false);
+    setIsOpenUpdateBAModal(false);
   }, []);
 
   const actions = useMemo(() => {
     let actions = [
-      { label: "Additional Payment", action: openAddPaymentModal },
+      {
+        label: "Additional Payment",
+        action() {
+          setIsOpenAddPaymentModal(true);
+        },
+      },
     ];
     if (payments?.length) {
       actions.push({
         label: "Update BA for payments",
-        action: openUpdateBAModal,
+        action() {
+          setIsOpenUpdateBAModal(true);
+        },
       });
     }
     return actions;
-  }, [payments, openAddPaymentModal, openUpdateBAModal]);
+  }, [payments]);
 
   return (
     <div className={cn(styles.container, className)}>
@@ -53,13 +52,13 @@ const PeriodActions = ({ className, period, periodData }) => {
         popupStrategy="fixed"
         stopClickPropagation={true}
       />
-      {isAddPaymentModalOpen && (
+      {isOpenAddPaymentModal && (
         <PaymentModalAdditional
           period={period}
           removeModal={closeAddPaymentModal}
         />
       )}
-      {isUpdateBAModalOpen && (
+      {isOpenUpdateBAModal && (
         <PaymentModalUpdateBA
           payments={payments}
           period={period}

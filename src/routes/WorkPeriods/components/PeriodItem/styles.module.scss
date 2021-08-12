@@ -91,6 +91,21 @@ td.teamName {
   white-space: nowrap;
 }
 
+.tooltipProjectName {
+  font-weight: normal;
+}
+
+.projectNameContainer {
+  display: block;
+}
+
+.projectName {
+  display: block;
+  width: 85px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 td.startDate,
 td.endDate {
   padding-left: 10px;

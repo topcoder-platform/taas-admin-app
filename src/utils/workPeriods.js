@@ -3,7 +3,6 @@ import {
   ALERT,
   API_CHALLENGE_PAYMENT_STATUS_MAP,
   API_PAYMENT_STATUS_MAP,
-  DATE_FORMAT_API,
   DATE_FORMAT_ISO,
   PAYMENT_STATUS,
   REASON_DISABLED,
@@ -127,7 +126,7 @@ export function makeUrlQuery(state) {
   const { pageNumber, pageSize } = pagination;
   const { criteria, order } = sorting;
   const params = {
-    startDate: dateRange[0].format(DATE_FORMAT_API),
+    startDate: dateRange[0].format(DATE_FORMAT_ISO),
     paymentStatuses: Object.keys(paymentStatuses).join(",").toLowerCase(),
     alertOptions: Object.keys(alertOptions).join(",").toLowerCase(),
     onlyFailedPayments: onlyFailedPayments ? "y" : "",
@@ -214,22 +213,50 @@ export function normalizePeriodData(period) {
     paymentStatus: normalizePaymentStatus(period.paymentStatus),
     paymentTotal: +period.paymentTotal || 0,
   };
-  let payments = period.payments;
-  if (payments) {
-    let lastFailedPayment = null;
-    for (let payment of payments) {
-      payment.createdAt = moment(payment.createdAt).valueOf();
-      payment.status = normalizeChallengePaymentStatus(payment.status);
-      if (payment.status === PAYMENT_STATUS.FAILED) {
-        lastFailedPayment = payment;
-      }
-    }
-    data.paymentErrorLast = lastFailedPayment?.statusDetails;
-    data.payments = payments.sort(
-      (paymentA, paymentB) => paymentA.createdAt - paymentB.createdAt
-    );
+  if (period.payments) {
+    normalizePeriodPayments(period.payments, data);
   }
   return data;
+}
+
+/**
+ * Normalizes working period payment data object by mutating it.
+ *
+ * @param {Object} payment working period payment data object
+ * @returns {Object} working period payment data object
+ */
+export function normalizePaymentData(payment) {
+  payment.createdAt = moment.utc(payment.createdAt).valueOf();
+  payment.status = normalizeChallengePaymentStatus(payment.status);
+  return payment;
+}
+
+/**
+ * Normalizes working period payments.
+ *
+ * @param {Array} payments array of payment data
+ * @param {Object} [data] period data object to populate
+ * @returns {Array} array with normalized payments data
+ */
+export function normalizePeriodPayments(payments, data) {
+  let lastFailedPayment = null;
+  for (let payment of payments) {
+    payment.createdAt = moment.utc(payment.createdAt).valueOf();
+    payment.status = normalizeChallengePaymentStatus(payment.status);
+    if (payment.status === PAYMENT_STATUS.FAILED) {
+      lastFailedPayment = payment;
+    }
+  }
+  payments.sort(sortPaymentsByCreatedAt);
+  if (data) {
+    data.paymentErrorLast = lastFailedPayment?.statusDetails;
+    data.payments = payments;
+  }
+  return payments;
+}
+
+function sortPaymentsByCreatedAt(paymentA, paymentB) {
+  return paymentA.createdAt - paymentB.createdAt;
 }
 
 export function normalizeChallengePaymentStatus(paymentStatus) {

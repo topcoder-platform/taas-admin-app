@@ -5,7 +5,11 @@ import PT from "prop-types";
 import PaymentActions from "../PaymentActions";
 import PaymentError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
-import { currencyFormatter, formatChallengeUrl } from "utils/formatters";
+import {
+  currencyFormatter,
+  formatChallengeUrl,
+  formatDateTimeAsLocal,
+} from "utils/formatters";
 import { PAYMENT_STATUS } from "constants/workPeriods";
 import styles from "./styles.module.scss";
 
@@ -55,6 +59,9 @@ const PaymentsListItem = ({ daysPaid, daysWorked, item }) => {
       </td>
       <td className={styles.days}>{item.days}</td>
       <td className={styles.amount}>{currencyFormatter.format(item.amount)}</td>
+      <td className={styles.createdAt}>
+        {formatDateTimeAsLocal(item.createdAt)}
+      </td>
       <td className={styles.paymentStatus}>
         <div className={styles.statusWithError}>
           <PaymentStatus status={item.status} />
@@ -84,6 +91,7 @@ PaymentsListItem.propTypes = {
     id: PT.oneOfType([PT.string, PT.number]).isRequired,
     amount: PT.number.isRequired,
     challengeId: PT.oneOfType([PT.string, PT.number]),
+    createdAt: PT.number.isRequired,
     days: PT.number.isRequired,
     memberRate: PT.number.isRequired,
     status: PT.string.isRequired,
