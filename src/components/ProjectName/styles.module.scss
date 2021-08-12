@@ -2,9 +2,6 @@
 
 .container {
   display: inline-block;
-  max-width: 20em;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
   @include roboto-medium;
 }

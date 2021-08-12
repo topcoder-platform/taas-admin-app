@@ -41,9 +41,7 @@ const PeriodAlerts = ({ alerts, className }) => {
       )}
       tooltipClassName={styles.tooltip}
     >
-      {alerts
-        ? alerts.map((alertId) => ALERT_MESSAGE_MAP[alertId]).join(", ")
-        : "None"}
+      {alerts ? "" : "None"}
     </Tooltip>
   );
 };

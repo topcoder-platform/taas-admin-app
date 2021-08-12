@@ -141,6 +141,17 @@ export const buildRequestQuery = (params) => {
   return queryParams.join("&");
 };
 
+/**
+ * Function that returns a promise which resolves after the provided delay.
+ *
+ * @param {number} ms number of milliseconds
+ * @returns {Promise}
+ */
+export const delay = (ms) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
 export const extractResponsePagination = ({ headers }) => ({
   totalCount: +headers["x-total"] || 0,
   pageCount: +headers["x-total-pages"] || 0,
@@ -242,4 +253,3 @@ export function validateAmount(value) {
     amount < 1e5
   );
 }
-

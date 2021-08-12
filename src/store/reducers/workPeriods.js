@@ -653,6 +653,21 @@ const actionHandlers = {
       periodsData: [periodsData],
     };
   },
+  [ACTION_TYPE.WP_SET_PERIOD_PAYMENTS]: (state, { periodId, payments }) => {
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      payments,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
+    };
+  },
   [ACTION_TYPE.WP_SET_PAYMENT_DATA]: (state, paymentData) => {
     const periodId = paymentData.workPeriodId;
     const periodsData = state.periodsData[0];

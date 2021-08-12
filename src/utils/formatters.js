@@ -1,6 +1,10 @@
 import moment from "moment";
 import isNumber from "lodash/isNumber";
-import { DATE_FORMAT_UI, PAYMENT_STATUS_LABELS } from "constants/workPeriods";
+import {
+  DATETIME_FORMAT_UI,
+  DATE_FORMAT_UI,
+  PAYMENT_STATUS_LABELS,
+} from "constants/workPeriods";
 import {
   PLATFORM_WEBSITE_URL,
   TAAS_BASE_PATH,
@@ -27,6 +31,16 @@ export function formatChallengeUrl(challengeId) {
  */
 export function formatDate(date) {
   return date ? moment(date).format(DATE_FORMAT_UI) : "-";
+}
+
+/**
+ * Formats the provided time in UTC-0 as time in local timezone.
+ *
+ * @param {number} dateTime number of milliseconds since UTC epoch
+ * @returns {string}
+ */
+export function formatDateTimeAsLocal(dateTime) {
+  return moment(dateTime).format(DATETIME_FORMAT_UI);
 }
 
 /**
