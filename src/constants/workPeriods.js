@@ -168,4 +168,6 @@ export const ALERT_MESSAGE_MAP = {
   [ALERT.LAST_BOOKING_WEEK]: "Last Booking Week",
 };
 
+export const SERVER_DATA_UPDATE_DELAY = 3000;
+
 export const DAYS_WORKED_HARD_LIMIT = 10;

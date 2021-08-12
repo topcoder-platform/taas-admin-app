@@ -108,7 +108,7 @@ const PaymentModalUpdateBA = ({ payments = [], period, removeModal }) => {
     }
     (async function () {
       let ok = await dispatch(
-        updatePaymentsBillingAccount(period.id, billingAccountId, 5000)
+        updatePaymentsBillingAccount(period.id, billingAccountId)
       );
       setIsModalOpen(!ok);
       setIsProcessing(false);

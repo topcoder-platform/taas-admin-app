@@ -177,6 +177,7 @@ const PeriodItem = ({
         <td className={styles.userHandle}>
           <Tooltip
             content={jobName}
+            strategy="fixed"
             targetClassName={styles.userHandleContainer}
           >
             <a
@@ -191,8 +192,9 @@ const PeriodItem = ({
         </td>
         <td className={styles.teamName}>
           <Tooltip
-            targetClassName={styles.projectNameContainer}
             content={projectIdAndTeamName}
+            strategy="fixed"
+            targetClassName={styles.projectNameContainer}
           >
             <ProjectName
               className={styles.projectName}

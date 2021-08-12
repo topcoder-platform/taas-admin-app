@@ -220,6 +220,18 @@ export function normalizePeriodData(period) {
 }
 
 /**
+ * Normalizes working period payment data object by mutating it.
+ *
+ * @param {Object} payment working period payment data object
+ * @returns {Object} working period payment data object
+ */
+export function normalizePaymentData(payment) {
+  payment.createdAt = moment.utc(payment.createdAt).valueOf();
+  payment.status = normalizeChallengePaymentStatus(payment.status);
+  return payment;
+}
+
+/**
  * Normalizes working period payments.
  *
  * @param {Array} payments array of payment data
