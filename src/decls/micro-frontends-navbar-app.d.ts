@@ -8,4 +8,6 @@ declare module "@topcoder/micro-frontends-navbar-app" {
   export const setAppMenu: (route: string, obj: Record<string, any>) => void;
   export const login: () => void;
   export const logout: () => void;
+  export const setNotificationPlatform: (platform: string) => void
+  export const PLATFORM: {[key: string]: string};
 }

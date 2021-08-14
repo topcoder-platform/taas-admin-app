@@ -2,7 +2,11 @@ import React, { useLayoutEffect } from "react";
 import { Provider } from "react-redux";
 import { Router, Redirect } from "@reach/router";
 import store from "store";
-import { disableSidebarForRoute } from "@topcoder/micro-frontends-navbar-app";
+import {
+  disableSidebarForRoute,
+  setNotificationPlatform,
+  PLATFORM,
+} from "@topcoder/micro-frontends-navbar-app";
 import WorkPeriods from "routes/WorkPeriods";
 import Freelancers from "routes/Freelancers";
 import Roles from "routes/Roles";
@@ -17,6 +21,7 @@ import "styles/global.scss";
 export default function Root() {
   useLayoutEffect(() => {
     disableSidebarForRoute(`${APP_BASE_PATH}/*`);
+    setNotificationPlatform(PLATFORM.TAAS);
   }, []);
 
   return (
