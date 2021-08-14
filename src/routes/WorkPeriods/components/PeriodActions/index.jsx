@@ -37,33 +37,20 @@ const PeriodActions = ({ className, period, periodData }) => {
         action() {
           setIsOpenAddPaymentModal(true);
         },
-        checkDisabled() {
-          let reasonsDisabled = [];
-          if (moment(period.start).isAfter(Date.now())) {
-            reasonsDisabled.push(
-              REASON_DISABLED_MESSAGE_MAP[REASON_DISABLED.NOT_ALLOW_FUTURE_WEEK]
-            );
-          }
-          if (!period.billingAccountId) {
-            reasonsDisabled.push(
-              REASON_DISABLED_MESSAGE_MAP[REASON_DISABLED.NO_BILLING_ACCOUNT]
-            );
-          }
-          return reasonsDisabled.length ? reasonsDisabled : null;
-        },
+        disabled: checkDisabled(period),
       },
     ];
     if (payments?.length) {
-      // @ts-ignore
       actions.push({
         label: "Update BA for payments",
         action() {
           setIsOpenUpdateBAModal(true);
         },
+        disabled: false,
       });
     }
     return actions;
-  }, [period.billingAccountId, period.start, payments]);
+  }, [period, payments]);
 
   return (
     <div className={cn(styles.container, className)}>
@@ -103,3 +90,18 @@ PeriodActions.propTypes = {
 };
 
 export default PeriodActions;
+
+function checkDisabled(period) {
+  let reasonsDisabled = [];
+  if (moment(period.start).isAfter(Date.now())) {
+    reasonsDisabled.push(
+      REASON_DISABLED_MESSAGE_MAP[REASON_DISABLED.NOT_ALLOW_FUTURE_WEEK]
+    );
+  }
+  if (!period.billingAccountId) {
+    reasonsDisabled.push(
+      REASON_DISABLED_MESSAGE_MAP[REASON_DISABLED.NO_BILLING_ACCOUNT]
+    );
+  }
+  return reasonsDisabled.length ? reasonsDisabled : false;
+}

@@ -18,13 +18,14 @@ import styles from "./styles.module.scss";
  * @returns {JSX.Element}
  */
 const PaymentModalEditAdditional = ({ payment, removeModal }) => {
+  const paymentAmount = payment.amount + "";
   const [isModalOpen, setIsModalOpen] = useState(true);
-  const [amount, setAmount] = useState(payment.amount);
+  const [amount, setAmount] = useState(paymentAmount);
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isTouched, setIsTouched] = useState(false);
   const dispatch = useDispatch();
 
+  const isChanged = amount !== paymentAmount;
   const { id: paymentId, workPeriodId: periodId } = payment;
   const amountControlId = `edit_pmt_amt_${paymentId}`;
 
@@ -41,7 +42,6 @@ const PaymentModalEditAdditional = ({ payment, removeModal }) => {
   }, []);
 
   const onChangeAmount = useCallback((amount) => {
-    setIsTouched(true);
     setAmount(amount);
   }, []);
 
@@ -77,7 +77,7 @@ const PaymentModalEditAdditional = ({ payment, removeModal }) => {
   return (
     <Modal
       approveColor="primary"
-      approveDisabled={!isTouched || !isAmountValid || isProcessing}
+      approveDisabled={!isChanged || !isAmountValid || isProcessing}
       approveText="Update"
       title="Edit Additional Payment"
       controls={isProcessing ? null : undefined}
@@ -102,7 +102,7 @@ const PaymentModalEditAdditional = ({ payment, removeModal }) => {
                     isAmountValid ? null : ERROR_MESSAGE.AMOUNT_OUT_OF_BOUNDS
                   }
                   id={amountControlId}
-                  isTouched={isTouched}
+                  isTouched={isChanged}
                   name="edit_payment_amount"
                   onChange={onChangeAmount}
                   value={amount}

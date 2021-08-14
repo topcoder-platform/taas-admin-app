@@ -1,4 +1,5 @@
 @import "styles/variables";
+@import "styles/mixins";
 
 .container {
   position: relative;
@@ -17,7 +18,9 @@
   padding: 10px 15px;
   line-height: 22px;
   font-size: $font-size-px;
+  @include roboto-regular;
   font-weight: normal;
+  letter-spacing: normal;
   text-transform: none;
   color: $text-color;
   background: #fff;

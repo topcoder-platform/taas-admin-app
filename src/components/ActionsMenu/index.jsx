@@ -163,8 +163,10 @@ const Menu = ({ close, items, referenceElement, strategy }) => {
       } else if (item.separator) {
         return <div key={index} className={compStyles.separator} />;
       } else {
-        let reasonsDisabled = item.checkDisabled?.();
-        let disabled = !!item.disabled || !!reasonsDisabled;
+        let disabled = !!item.disabled;
+        let reasonsDisabled = Array.isArray(item.disabled)
+          ? item.disabled
+          : null;
         let attrs = {
           key: index,
           "data-action-index": index,

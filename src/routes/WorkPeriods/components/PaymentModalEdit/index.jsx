@@ -21,10 +21,10 @@ import styles from "./styles.module.scss";
 const PaymentModalEdit = ({ daysPaid, daysWorked, payment, removeModal }) => {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isTouched, setIsTouched] = useState(false);
   const [days, setDays] = useState(payment.days);
   const dispatch = useDispatch();
 
+  const isChanged = days !== payment.days;
   const { id: paymentId, workPeriodId: periodId } = payment;
 
   const maxDays =
@@ -46,7 +46,6 @@ const PaymentModalEdit = ({ daysPaid, daysWorked, payment, removeModal }) => {
   }, []);
 
   const onChangeDays = useCallback((days) => {
-    setIsTouched(true);
     setDays(days);
   }, []);
 
@@ -66,7 +65,7 @@ const PaymentModalEdit = ({ daysPaid, daysWorked, payment, removeModal }) => {
   return (
     <Modal
       approveColor="primary"
-      approveDisabled={!isTouched || isProcessing}
+      approveDisabled={!isChanged || isProcessing}
       approveText="Update"
       title="Edit Payment"
       controls={isProcessing ? null : undefined}
