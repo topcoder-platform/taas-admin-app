@@ -38,8 +38,8 @@
   }
 
   &.invalid {
-    input,
-    input:hover {
+    input.input,
+    input.input:hover {
       border-color: $error-color;
       color: $error-text-color;
     }

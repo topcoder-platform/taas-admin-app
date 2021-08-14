@@ -37,6 +37,53 @@ import { RESOURCE_BOOKING_STATUS, WORK_PERIODS_PATH } from "constants/index.js";
 import { currencyFormatter } from "utils/formatters";
 
 /**
+ * A thunk that adds working period's payment and reloads working period data
+ * after some delay.
+ *
+ * @param {string} workPeriodId working period id
+ * @param {Object} data payment data
+ * @param {string|number} data.amount payment amount
+ * @param {number} data.days number of days for payment
+ * @param {string} [data.workPeriodId] working period id
+ * @param {number} [periodUpdateDelay] update delay for period data
+ * @returns {function}
+ */
+export const addWorkPeriodPayment =
+  (workPeriodId, data, periodUpdateDelay = SERVER_DATA_UPDATE_DELAY) =>
+  async (dispatch) => {
+    let errorMessage = null;
+    try {
+      let paymentData = await services.postWorkPeriodPayment({
+        ...data,
+        workPeriodId,
+      });
+      if ("error" in paymentData) {
+        errorMessage = paymentData.error.message;
+      }
+    } catch (error) {
+      errorMessage = error.toString();
+    }
+    if (errorMessage) {
+      makeToast(errorMessage);
+      return false;
+    }
+    [, errorMessage] = await dispatch(
+      loadWorkPeriodData(workPeriodId, periodUpdateDelay)
+    );
+    if (errorMessage) {
+      makeToast(
+        "Additional payment scheduled for resource " +
+          "but working period data was not reloaded.\n" +
+          errorMessage,
+        "warning"
+      );
+    } else {
+      makeToast("Additional payment scheduled for resource", "success");
+    }
+    return true;
+  };
+
+/**
  * A thunk that cancels specific working period payment, reloads WP data
  * and updates store's state after certain delay.
  *
@@ -66,7 +113,12 @@ export const cancelWorkPeriodPayment =
       loadWorkPeriodData(periodId, periodUpdateDelay)
     );
     if (errorMessage) {
-      makeToast("Failed to reload working period data. " + errorMessage);
+      makeToast(
+        `Payment ${paymentData.amount} was marked as "cancelled" ` +
+          "but working period data wos not reloaded.\n" +
+          errorMessage,
+        "warning"
+      );
     } else if (periodData) {
       let userHandle = periodData.userHandle;
       let amount = null;
@@ -287,6 +339,50 @@ export const toggleWorkPeriodDetails =
     } else {
       dispatch(actions.hideWorkPeriodDetails(period.id));
     }
+  };
+
+/**
+ * A thunk that updates working period's payment and reloads working period data
+ * after some delay.
+ *
+ * @param {string} periodId working period id
+ * @param {string} paymentId working period payment id
+ * @param {Object} data payment data
+ * @param {string|number} data.amount payment amount
+ * @param {number} [data.days] number of days for payment
+ * @param {number} [periodUpdateDelay] update delay for period data
+ * @returns {function}
+ */
+export const updateWorkPeriodPayment =
+  (periodId, paymentId, data, periodUpdateDelay = SERVER_DATA_UPDATE_DELAY) =>
+  async (dispatch) => {
+    let paymentData = null;
+    let errorMessage = null;
+    try {
+      paymentData = await services.patchWorkPeriodPayment(paymentId, data);
+      paymentData = normalizePaymentData(paymentData);
+    } catch (error) {
+      errorMessage = error.toString();
+    }
+    if (errorMessage) {
+      makeToast(errorMessage);
+      return false;
+    }
+    dispatch(actions.setWorkPeriodPaymentData(paymentData));
+    [, errorMessage] = await dispatch(
+      loadWorkPeriodData(periodId, periodUpdateDelay)
+    );
+    if (errorMessage) {
+      makeToast(
+        "Payment was successfully updated " +
+          "but working period data was not reloaded.\n" +
+          errorMessage,
+        "warning"
+      );
+    } else {
+      makeToast("Payment was successfully updated", "success");
+    }
+    return true;
   };
 
 /**

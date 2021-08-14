@@ -243,13 +243,5 @@ export const hoursToHumanReadableTime = (timeHrs) => {
  */
 export function validateAmount(value) {
   let amount = +value;
-  let valueStr = value + "";
-  return (
-    !isNaN(amount) &&
-    (amount.toFixed(0) === valueStr ||
-      amount.toFixed(1) === valueStr ||
-      amount.toFixed(2) === valueStr) &&
-    amount > 0 &&
-    amount < 1e5
-  );
+  return !isNaN(amount) && amount > 0 && amount < 1e5 && !value.endsWith(".");
 }

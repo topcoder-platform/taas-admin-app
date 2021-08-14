@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import PT from "prop-types";
 import IntegerFieldHinted from "components/IntegerFieldHinted";
 import Modal from "components/Modal";
 import Spinner from "components/Spinner";
 import TextField from "components/TextField";
-import { makeToast } from "components/ToastrMessage";
-import { patchWorkPeriodPayment } from "services/workPeriods";
+import { updateWorkPeriodPayment } from "store/thunks/workPeriods";
 import { currencyFormatter } from "utils/formatters";
 import { preventDefault } from "utils/misc";
 import { CHALLENGE_PAYMENT_ACTIVE_STATUSES } from "constants/workPeriods";
@@ -21,7 +21,11 @@ import styles from "./styles.module.scss";
 const PaymentModalEdit = ({ daysPaid, daysWorked, payment, removeModal }) => {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isTouched, setIsTouched] = useState(false);
   const [days, setDays] = useState(payment.days);
+  const dispatch = useDispatch();
+
+  const { id: paymentId, workPeriodId: periodId } = payment;
 
   const maxDays =
     daysWorked -
@@ -41,27 +45,28 @@ const PaymentModalEdit = ({ daysPaid, daysWorked, payment, removeModal }) => {
     setIsModalOpen(false);
   }, []);
 
+  const onChangeDays = useCallback((days) => {
+    setIsTouched(true);
+    setDays(days);
+  }, []);
+
   useEffect(() => {
     if (!isProcessing) {
       return;
     }
-    patchWorkPeriodPayment(payment.id, { amount, days })
-      .then(() => {
-        makeToast("Payment was successfully updated", "success");
-        setIsModalOpen(false);
-      })
-      .catch((error) => {
-        makeToast(error.toString());
-      })
-      .finally(() => {
-        setIsProcessing(false);
-      });
-  }, [amount, days, isProcessing, payment.id]);
+    (async function () {
+      let ok = await dispatch(
+        updateWorkPeriodPayment(periodId, paymentId, { amount, days })
+      );
+      setIsModalOpen(!ok);
+      setIsProcessing(false);
+    })();
+  }, [amount, days, isProcessing, paymentId, periodId, dispatch]);
 
   return (
     <Modal
       approveColor="primary"
-      approveDisabled={isProcessing}
+      approveDisabled={!isTouched || isProcessing}
       approveText="Update"
       title="Edit Payment"
       controls={isProcessing ? null : undefined}
@@ -102,7 +107,7 @@ const PaymentModalEdit = ({ daysPaid, daysWorked, payment, removeModal }) => {
                 <td>
                   <IntegerFieldHinted
                     name="day_cnt"
-                    onChange={setDays}
+                    onChange={onChangeDays}
                     maxValue={maxDays}
                     minValue={1}
                     maxValueMessage="Cannot pay for more days than the user has worked for"
@@ -131,6 +136,7 @@ PaymentModalEdit.propTypes = {
     id: PT.string.isRequired,
     memberRate: PT.number.isRequired,
     status: PT.string.isRequired,
+    workPeriodId: PT.string.isRequired,
   }),
   removeModal: PT.func.isRequired,
 };

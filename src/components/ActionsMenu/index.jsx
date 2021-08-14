@@ -3,6 +3,7 @@ import PT from "prop-types";
 import cn from "classnames";
 import { usePopper } from "react-popper";
 import Button from "components/Button";
+import Tooltip from "components/Tooltip";
 import IconArrowDown from "../../assets/images/icon-arrow-down-narrow.svg";
 import { useClickOutside } from "utils/hooks";
 import { negate, stopPropagation } from "utils/misc";
@@ -39,48 +40,6 @@ const ActionsMenu = ({
     setIsOpen(negate);
   }, []);
 
-  const onItemClick = useCallback(
-    (event) => {
-      let index = +event.target.dataset.actionIndex;
-      let item = items[index];
-      if (!item || item.disabled || item.separator) {
-        return;
-      }
-      closeMenu();
-      item.action?.();
-    },
-    [items, closeMenu]
-  );
-
-  const menuItems = useMemo(
-    () =>
-      items.map((item, index) => {
-        if (item.hidden) {
-          return null;
-        } else if (item.separator) {
-          return <div key={index} className={compStyles.separator} />;
-        } else {
-          return (
-            <div
-              key={index}
-              data-action-index={index}
-              onClick={onItemClick}
-              role="button"
-              tabIndex={0}
-              className={cn(
-                compStyles.item,
-                { [compStyles.itemDisabled]: item.disabled },
-                item.className
-              )}
-            >
-              {item.label}
-            </div>
-          );
-        }
-      }),
-    [items, onItemClick]
-  );
-
   return (
     <div
       className={compStyles.container}
@@ -104,8 +63,8 @@ const ActionsMenu = ({
       </Button>
       {isOpen && (
         <Menu
-          items={menuItems}
-          onClickOutside={closeMenu}
+          close={closeMenu}
+          items={items}
           referenceElement={referenceElement}
           strategy={popupStrategy}
         />
@@ -123,6 +82,7 @@ ActionsMenu.propTypes = {
       label: PT.string,
       action: PT.func,
       separator: PT.bool,
+      disabled: PT.bool,
       hidden: PT.bool,
     })
   ),
@@ -138,7 +98,7 @@ export default ActionsMenu;
  * @param {Object} props component properties
  * @returns {JSX.Element}
  */
-const Menu = ({ items, onClickOutside, referenceElement, strategy }) => {
+const Menu = ({ close, items, referenceElement, strategy }) => {
   const [popperElement, setPopperElement] = useState(null);
   const [arrowElement, setArrowElement] = useState(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
@@ -180,7 +140,73 @@ const Menu = ({ items, onClickOutside, referenceElement, strategy }) => {
     ],
   });
 
-  useClickOutside(popperElement, onClickOutside, []);
+  const onClickItem = useCallback(
+    (event) => {
+      let targetData = event.target.dataset;
+      let index = +targetData.actionIndex;
+      let item = items[index];
+      if (!item || targetData.disabled || item.separator) {
+        return;
+      }
+      close();
+      item.action?.();
+    },
+    [close, items]
+  );
+
+  useClickOutside(popperElement, close, []);
+
+  const menuItems = useMemo(() => {
+    return items.map((item, index) => {
+      if (item.hidden) {
+        return null;
+      } else if (item.separator) {
+        return <div key={index} className={compStyles.separator} />;
+      } else {
+        let reasonsDisabled = item.checkDisabled?.();
+        let disabled = !!item.disabled || !!reasonsDisabled;
+        let attrs = {
+          key: index,
+          "data-action-index": index,
+          onClick: onClickItem,
+          role: "button",
+          tabIndex: 0,
+          className: cn(
+            compStyles.item,
+            { [compStyles.itemDisabled]: disabled },
+            item.className
+          ),
+        };
+        if (disabled) {
+          attrs["data-disabled"] = true;
+        }
+        return (
+          <div {...attrs}>
+            {reasonsDisabled ? (
+              <Tooltip
+                content={
+                  reasonsDisabled.length === 1 ? (
+                    reasonsDisabled[0]
+                  ) : (
+                    <ul>
+                      {reasonsDisabled.map((text, index) => (
+                        <li key={index}>{text}</li>
+                      ))}
+                    </ul>
+                  )
+                }
+                strategy="fixed"
+              >
+                {item.label}
+              </Tooltip>
+            ) : (
+              item.label
+            )}
+          </div>
+        );
+      }
+    });
+  }, [items, onClickItem]);
 
   return (
     <div
@@ -189,7 +215,7 @@ const Menu = ({ items, onClickOutside, referenceElement, strategy }) => {
       style={styles.popper}
       {...attributes.popper}
     >
-      <div className={compStyles.items}>{items}</div>
+      <div className={compStyles.items}>{menuItems}</div>
       <div
         ref={setArrowElement}
         style={styles.arrow}
@@ -200,8 +226,17 @@ const Menu = ({ items, onClickOutside, referenceElement, strategy }) => {
 };
 
 Menu.propTypes = {
-  items: PT.array.isRequired,
-  onClickOutside: PT.func.isRequired,
+  close: PT.func.isRequired,
+  items: PT.arrayOf(
+    PT.shape({
+      label: PT.string,
+      action: PT.func,
+      checkDisabled: PT.func,
+      disabled: PT.bool,
+      separator: PT.bool,
+      hidden: PT.bool,
+    })
+  ),
   referenceElement: PT.object,
   strategy: PT.oneOf(["absolute", "fixed"]),
 };
