@@ -32,9 +32,10 @@ input.input {
   flex: 1 1 0;
   margin: 0;
   border: none !important;
-  padding: 3px 0;
+  padding: 2px 0 3px;
   height: 28px;
-  line-height: 22px;
+  font-size: 14px;
+  line-height: normal;
   background: #fff;
   outline: none !important;
   box-shadow: none !important;

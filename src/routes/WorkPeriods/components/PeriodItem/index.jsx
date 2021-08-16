@@ -10,6 +10,8 @@ import Tooltip from "components/Tooltip";
 import PaymentError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
 import PaymentTotal from "../PaymentTotal";
+import PeriodActions from "../PeriodActions";
+import PeriodAlerts from "../PeriodAlerts";
 import PeriodWorkingDays from "../PeriodWorkingDays";
 import PeriodDetails from "../PeriodDetails";
 import ProcessingError from "../ProcessingError";
@@ -19,6 +21,7 @@ import {
 } from "constants/workPeriods";
 import {
   setWorkPeriodWorkingDays,
+  toggleWorkingDaysAllowExtra,
   toggleWorkingDaysUpdated,
   toggleWorkPeriod,
 } from "store/actions/workPeriods";
@@ -34,7 +37,6 @@ import {
 } from "utils/formatters";
 import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
-import PeriodAlerts from "../PeriodAlerts";
 
 /**
  * Displays the working period data row to be used in PeriodList component.
@@ -73,6 +75,10 @@ const PeriodItem = ({
     dispatch(toggleWorkPeriodDetails(item));
   }, [dispatch, item]);
 
+  const onApproveExtraWorkingDays = useCallback(() => {
+    dispatch(toggleWorkingDaysAllowExtra(item.id, true));
+  }, [dispatch, item.id]);
+
   const onWorkingDaysUpdateHintTimeout = useCallback(() => {
     dispatch(toggleWorkingDaysUpdated(item.id, false));
   }, [dispatch, item.id]);
@@ -110,11 +116,17 @@ const PeriodItem = ({
     [item.jobId]
   );
 
-  const projectId = useMemo(
+  const projectIdAndTeamName = useMemo(
     () => (
       <span className={styles.tooltipContent}>
         <span className={styles.tooltipLabel}>Project ID:</span>&nbsp;
         {item.projectId}
+        <br />
+        <span className={styles.tooltipLabel}>Team Name:</span>&nbsp;
+        <ProjectName
+          className={styles.tooltipProjectName}
+          projectId={item.projectId}
+        />
       </span>
     ),
     [item.projectId]
@@ -165,6 +177,7 @@ const PeriodItem = ({
         <td className={styles.userHandle}>
           <Tooltip
             content={jobName}
+            strategy="fixed"
             targetClassName={styles.userHandleContainer}
           >
             <a
@@ -178,8 +191,15 @@ const PeriodItem = ({
           </Tooltip>
         </td>
         <td className={styles.teamName}>
-          <Tooltip content={projectId}>
-            <ProjectName projectId={item.projectId} />
+          <Tooltip
+            content={projectIdAndTeamName}
+            strategy="fixed"
+            targetClassName={styles.projectNameContainer}
+          >
+            <ProjectName
+              className={styles.projectName}
+              projectId={item.projectId}
+            />
           </Tooltip>
         </td>
         <td className={styles.startDate}>{formatDate(item.bookingStart)}</td>
@@ -202,6 +222,7 @@ const PeriodItem = ({
           <PaymentTotal
             className={styles.paymentTotalContainer}
             daysPaid={data.daysPaid}
+            daysWorked={data.daysWorked}
             payments={data.payments}
             paymentTotal={data.paymentTotal}
             popupStrategy="fixed"
@@ -217,10 +238,14 @@ const PeriodItem = ({
             controlName={`wp_wrk_days_${item.id}`}
             data={data}
             isDisabled={isDisabled}
+            onApproveExtraWorkingDays={onApproveExtraWorkingDays}
             onWorkingDaysChange={onWorkingDaysChange}
             onWorkingDaysUpdateHintTimeout={onWorkingDaysUpdateHintTimeout}
             updateHintTimeout={2000}
           />
+        </td>
+        <td>
+          <PeriodActions period={item} periodData={data} />
         </td>
       </tr>
       {details && (

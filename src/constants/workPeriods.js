@@ -4,6 +4,7 @@ import * as ALERT from "./workPeriods/alerts";
 import * as API_CHALLENGE_PAYMENT_STATUS from "./workPeriods/apiChallengePaymentStatus";
 import * as API_PAYMENT_STATUS from "./workPeriods/apiPaymentStatus";
 import * as API_SORT_BY from "./workPeriods/apiSortBy";
+import * as ERROR_MESSAGE from "./workPeriods/errorMessage";
 import * as SORT_BY from "./workPeriods/sortBy";
 import * as SORT_ORDER from "./workPeriods/sortOrder";
 import * as PAYMENT_STATUS from "./workPeriods/paymentStatus";
@@ -14,6 +15,7 @@ export {
   API_CHALLENGE_PAYMENT_STATUS,
   API_PAYMENT_STATUS,
   API_SORT_BY,
+  ERROR_MESSAGE,
   SORT_BY,
   SORT_ORDER,
   PAYMENT_STATUS,
@@ -31,6 +33,7 @@ export const TAAS_TEAM_API_URL = `${API.V5}/taas-teams`;
 export const DATE_FORMAT_API = "YYYY-MM-DD";
 export const DATE_FORMAT_ISO = "YYYY-MM-DD";
 export const DATE_FORMAT_UI = "MMM DD, YYYY";
+export const DATETIME_FORMAT_UI = "MMM DD, YYYY h:mm a";
 
 // Field names that are required to be retrieved for display, filtering and sorting.
 export const API_REQUIRED_FIELDS = [
@@ -53,6 +56,7 @@ export const API_REQUIRED_FIELDS = [
   "workPeriods.daysWorked",
   "workPeriods.daysPaid",
   "workPeriods.payments.amount",
+  "workPeriods.payments.billingAccountId",
   "workPeriods.payments.challengeId",
   "workPeriods.payments.createdAt",
   "workPeriods.payments.days",
@@ -126,6 +130,12 @@ export const API_CHALLENGE_PAYMENT_STATUS_MAP = {
   [API_CHALLENGE_PAYMENT_STATUS.SCHEDULED]: PAYMENT_STATUS.SCHEDULED,
 };
 
+export const CHALLENGE_PAYMENT_ACTIVE_STATUSES = {
+  [PAYMENT_STATUS.COMPLETED]: PAYMENT_STATUS.COMPLETED,
+  [PAYMENT_STATUS.IN_PROGRESS]: PAYMENT_STATUS.IN_PROGRESS,
+  [PAYMENT_STATUS.SCHEDULED]: PAYMENT_STATUS.SCHEDULED,
+};
+
 export const URL_QUERY_PARAM_MAP = new Map([
   ["startDate", "startDate"],
   ["paymentStatuses", "status"],
@@ -159,3 +169,7 @@ export const ALERT_MESSAGE_MAP = {
   [ALERT.BA_NOT_ASSIGNED]: "BA - Not Assigned",
   [ALERT.LAST_BOOKING_WEEK]: "Last Booking Week",
 };
+
+export const SERVER_DATA_UPDATE_DELAY = 5000;
+
+export const DAYS_WORKED_HARD_LIMIT = 10;

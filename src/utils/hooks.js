@@ -14,7 +14,10 @@ export const useClickOutside = (element, listener, deps) => {
     let onClick = null;
     if (element && listener) {
       onClick = (event) => {
-        if (!element.contains(event.target)) {
+        if (
+          document.contains(event.target) &&
+          !element.contains(event.target)
+        ) {
           listener();
         }
       };
@@ -46,4 +49,20 @@ export const useUpdateEffect = (effect, deps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
+};
+
+/**
+ * A hook that returns previously saved value before component updated.
+ *
+ * @param {*} value value to save
+ * @returns {*}
+ */
+export const usePrevious = (value) => {
+  const ref = useRef();
+
+  useEffect(() => {
+    ref.current = value;
+  });
+
+  return ref.current;
 };

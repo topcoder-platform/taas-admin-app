@@ -28,7 +28,7 @@ export function filterPeriodsByStartDate(periods, startDate) {
  * Returns the option which matches the provided value or null.
  *
  * @param {{ value: string, label: string }[]} options options object
- * @param {string} value value to search for
+ * @param {any} value value to search for
  * @returns {?{ value: string, label: string }}
  */
 export function getOptionByValue(options, value) {
@@ -141,6 +141,17 @@ export const buildRequestQuery = (params) => {
   return queryParams.join("&");
 };
 
+/**
+ * Function that returns a promise which resolves after the provided delay.
+ *
+ * @param {number} ms number of milliseconds
+ * @returns {Promise}
+ */
+export const delay = (ms) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
 export const extractResponsePagination = ({ headers }) => ({
   totalCount: +headers["x-total"] || 0,
   pageCount: +headers["x-total-pages"] || 0,
@@ -222,3 +233,15 @@ export const hoursToHumanReadableTime = (timeHrs) => {
   }
   return timeStr;
 };
+
+/**
+ * Checks if the provided value is a valid payment amount. It can be a number
+ * or a string that can be converted to number.
+ *
+ * @param {any} value payment amount
+ * @returns {boolean}
+ */
+export function validateAmount(value) {
+  let amount = +value;
+  return !isNaN(amount) && amount > 0 && amount < 1e5 && !value.endsWith(".");
+}

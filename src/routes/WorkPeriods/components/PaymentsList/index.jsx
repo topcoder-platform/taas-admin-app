@@ -10,7 +10,7 @@ import PaymentsListItem from "../PaymentsListItem";
  * @param {Object} props component properties
  * @returns {JSX.Element}
  */
-const PaymentsList = ({ className, payments }) => (
+const PaymentsList = ({ className, daysPaid, daysWorked, payments }) => (
   <form className={cn(styles.container, className)} action="#">
     <table className={styles.paymentsList}>
       <thead>
@@ -19,13 +19,19 @@ const PaymentsList = ({ className, payments }) => (
           <th>Weekly Rate</th>
           <th>Days</th>
           <th>Amount</th>
+          <th className={styles.createdAt}>Created At</th>
           <th className={styles.paymentStatus}>Status</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         {payments.map((payment) => (
-          <PaymentsListItem key={payment.id} item={payment} />
+          <PaymentsListItem
+            key={payment.id}
+            daysPaid={daysPaid}
+            daysWorked={daysWorked}
+            item={payment}
+          />
         ))}
       </tbody>
     </table>
@@ -34,6 +40,8 @@ const PaymentsList = ({ className, payments }) => (
 
 PaymentsList.propTypes = {
   className: PT.string,
+  daysPaid: PT.number.isRequired,
+  daysWorked: PT.number.isRequired,
   payments: PT.arrayOf(
     PT.shape({
       id: PT.string.isRequired,

@@ -24,7 +24,7 @@ const JobName = ({ className, jobId }) => {
 
 JobName.propTypes = {
   className: PT.string,
-  jobId: PT.oneOfType([PT.number, PT.string]).isRequired,
+  jobId: PT.oneOfType([PT.number, PT.string]),
 };
 
 export default memo(JobName);

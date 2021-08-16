@@ -1,0 +1,32 @@
+@import "styles/variables";
+@import "styles/mixins";
+
+.fieldRow {
+  display: flex;
+  align-items: baseline;
+}
+
+.fieldLabel {
+  flex: 0 0 auto;
+  padding: 0 20px 0 0;
+
+  label {
+    font-weight: bold;
+  }
+}
+
+.fieldControl {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+
+  @include desktop {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}
+
+.notice {
+  margin: 12px 0;
+  color: $warning-color;
+}

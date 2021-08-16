@@ -268,7 +268,7 @@ export const setWorkPeriodsPaymentStatuses = (paymentStatuses) => ({
 /**
  * Creates an action denoting the changing of alert option
  *
- * @param {Object} paymentStatuses object with working periods' payment statuses
+ * @param {Object} option object with working periods' payment statuses
  * @returns {Object}
  */
 export const setAlertOption = (option) => ({
@@ -313,6 +313,11 @@ export const setWorkPeriodDataError = (periodId, message) => ({
 export const setWorkPeriodPaymentData = (paymentData) => ({
   type: ACTION_TYPE.WP_SET_PAYMENT_DATA,
   payload: paymentData,
+});
+
+export const setWorkPeriodPayments = (periodId, payments) => ({
+  type: ACTION_TYPE.WP_SET_PERIOD_PAYMENTS,
+  payload: { periodId, payments },
 });
 
 /**
@@ -397,6 +402,19 @@ export const toggleWorkingPeriodsVisible = (on = null) => ({
 export const toggleWorkPeriodsProcessingPayments = (on = null) => ({
   type: ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS,
   payload: on,
+});
+
+/**
+ * Creates an action denoting the toggling of the flag allowing extra working
+ * days.
+ *
+ * @param {string} periodId working period id
+ * @param {?boolean} on whether to toggle daysWorkedAllowExtra on or off
+ * @returns {Object}
+ */
+export const toggleWorkingDaysAllowExtra = (periodId, on = null) => ({
+  type: ACTION_TYPE.WP_TOGGLE_WORKING_DAYS_EXTRA,
+  payload: { periodId, on },
 });
 
 /**

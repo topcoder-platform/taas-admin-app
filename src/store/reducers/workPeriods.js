@@ -12,6 +12,7 @@ import {
   URL_QUERY_PARAM_MAP,
   REASON_DISABLED,
   ALERT,
+  DAYS_WORKED_HARD_LIMIT,
 } from "constants/workPeriods";
 import {
   filterPeriodsByStartDate,
@@ -135,12 +136,14 @@ const actionHandlers = {
     for (let period of periods) {
       periodsById[period.id] = true;
       let periodData = initPeriodData(period);
-      periodData.daysWorkedMax = computeDaysWorkedMax(
+      let daysWorkedMax = computeDaysWorkedMax(
         period.bookingStart,
         period.bookingEnd,
         periodStart,
         periodEnd
       );
+      periodData.daysWorkedAllowExtra = periodData.daysWorked > daysWorkedMax;
+      periodData.daysWorkedMax = daysWorkedMax;
       periodsData[period.id] = periodData;
       let reasonsDisabled = findReasonsDisabled(period, dateRange);
       if (reasonsDisabled) {
@@ -244,12 +247,14 @@ const actionHandlers = {
     const periodsData = state.periodsData[0];
     for (let period of details.periods) {
       let periodData = initPeriodData(period);
-      periodData.daysWorkedMax = computeDaysWorkedMax(
+      let daysWorkedMax = computeDaysWorkedMax(
         bookingStart,
         bookingEnd,
         period.start,
         period.end
       );
+      periodData.daysWorkedAllowExtra = periodData.daysWorked > daysWorkedMax;
+      periodData.daysWorkedMax = daysWorkedMax;
       periodsData[period.id] = periodData;
       delete period.data;
     }
@@ -443,12 +448,19 @@ const actionHandlers = {
     }
     daysWorked = Math.min(
       Math.max(daysWorked, periodData.daysPaid),
-      periodData.daysWorkedMax
+      DAYS_WORKED_HARD_LIMIT
     );
     if (daysWorked === periodData.daysWorked) {
       return state;
     }
-    periodsData[periodId] = { ...periodData, daysWorked };
+    periodsData[periodId] = {
+      ...periodData,
+      daysWorked,
+      daysWorkedAllowExtra:
+        daysWorked <= periodData.daysWorkedMax
+          ? false
+          : periodData.daysWorkedAllowExtra,
+    };
     state = {
       ...state,
       periodsData: [periodsData],
@@ -637,6 +649,21 @@ const actionHandlers = {
       periodsData: [periodsData],
     };
   },
+  [ACTION_TYPE.WP_SET_PERIOD_PAYMENTS]: (state, { periodId, payments }) => {
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      payments,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
+    };
+  },
   [ACTION_TYPE.WP_SET_PAYMENT_DATA]: (state, paymentData) => {
     const periodId = paymentData.workPeriodId;
     const periodsData = state.periodsData[0];
@@ -674,12 +701,19 @@ const actionHandlers = {
     }
     daysWorked = Math.min(
       Math.max(daysWorked, periodData.daysPaid),
-      periodData.daysWorkedMax
+      DAYS_WORKED_HARD_LIMIT
     );
     if (daysWorked === periodData.daysWorked) {
       return state;
     }
-    periodsData[periodId] = { ...periodData, daysWorked };
+    periodsData[periodId] = {
+      ...periodData,
+      daysWorked,
+      daysWorkedAllowExtra:
+        daysWorked <= periodData.daysWorkedMax
+          ? false
+          : periodData.daysWorkedAllowExtra,
+    };
     return updateStateAfterWorkingDaysChange(periodId, {
       ...state,
       periodsData: [periodsData],
@@ -811,6 +845,22 @@ const actionHandlers = {
       periodsSelected: [periodsSelectedSet],
       isSelectedPeriodsAll,
       isSelectedPeriodsVisible,
+    };
+  },
+  [ACTION_TYPE.WP_TOGGLE_WORKING_DAYS_EXTRA]: (state, { periodId, on }) => {
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    on = on === null ? !periodData.daysWorkedAllowExtra : on;
+    if (!periodData || periodData.daysWorkedAllowExtra === on) {
+      return state;
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      daysWorkedAllowExtra: on,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
     };
   },
   [ACTION_TYPE.WP_TOGGLE_WORKING_DAYS_UPDATED]: (state, { periodId, on }) => {

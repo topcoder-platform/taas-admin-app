@@ -18,10 +18,10 @@ $control-disabled-border-color: lighten(
   $color: $control-border-color,
   $amount: 5%,
 );
-$control-disabled-bg-color: lighten(
-  $color: $control-border-color,
-  $amount: 10%,
-);
+$control-disabled-bg-color: #ddd; // lighten(
+//   $color: $control-border-color,
+//   $amount: 10%,
+// );
 $control-disabled-text-color: lighten(
   $color: $text-color,
   $amount: 10%,

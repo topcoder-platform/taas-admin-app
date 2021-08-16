@@ -89,7 +89,7 @@ const PeriodDetails = ({
       )}
     >
       {periodsIsLoading ? (
-        <td colSpan={10}>
+        <td colSpan={11}>
           <div className={styles.loadingIndicator}>Loading...</div>
         </td>
       ) : (
@@ -122,7 +122,7 @@ const PeriodDetails = ({
               </Button>
             </div>
           </td>
-          <td colSpan={7} className={styles.periodHistory}>
+          <td colSpan={8} className={styles.periodHistory}>
             <div className={styles.periodsContainer}>
               <div className={styles.periodsHeader}>
                 <span className={styles.periodsHeaderTitle}>History</span>
