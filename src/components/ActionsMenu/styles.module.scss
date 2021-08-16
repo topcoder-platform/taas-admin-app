@@ -71,9 +71,8 @@
 }
 
 .itemDisabled {
-  color: gray;
-  opacity: 0.6;
-  pointer-events: none;
+  color: #bbb;
+  cursor: default;
 }
 
 .hidden {

@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import PT from "prop-types";
 import moment from "moment";
 import debounce from "lodash/debounce";
 import Modal from "components/Modal";
 import Spinner from "components/Spinner";
-import TextField from "components/TextField";
-import ValidationError from "components/ValidationError";
-import { makeToast } from "components/ToastrMessage";
-import { postWorkPeriodPayment } from "services/workPeriods";
+import CurrencyField from "components/CurrencyField";
+import { addWorkPeriodPayment } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
 import { preventDefault, validateAmount } from "utils/misc";
+import { ERROR_MESSAGE } from "constants/workPeriods";
 import styles from "./styles.module.scss";
 
 /**
@@ -21,9 +21,10 @@ import styles from "./styles.module.scss";
  */
 const PaymentModalAdditional = ({ period, removeModal }) => {
   const [isModalOpen, setIsModalOpen] = useState(true);
-  const [amount, setAmount] = useState("0");
+  const [amount, setAmount] = useState("");
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const dispatch = useDispatch();
 
   const onApprove = () => {
     let isAmountValid = validateAmount(amount);
@@ -35,10 +36,6 @@ const PaymentModalAdditional = ({ period, removeModal }) => {
 
   const onDismiss = useCallback(() => {
     setIsModalOpen(false);
-  }, []);
-
-  const onChangeAmount = useCallback((amount) => {
-    setAmount((amount || "").trim());
   }, []);
 
   const validateAmountDebounced = useCallback(
@@ -61,23 +58,19 @@ const PaymentModalAdditional = ({ period, removeModal }) => {
     if (!isProcessing) {
       return;
     }
-    postWorkPeriodPayment({ workPeriodId: period.id, days: 0, amount })
-      .then(() => {
-        makeToast("Additional payment scheduled for resource", "success");
-        setIsModalOpen(false);
-      })
-      .catch((error) => {
-        makeToast(error.toString());
-      })
-      .finally(() => {
-        setIsProcessing(false);
-      });
-  }, [amount, isProcessing, period.id]);
+    (async function () {
+      let ok = await dispatch(
+        addWorkPeriodPayment(period.id, { days: 0, amount })
+      );
+      setIsModalOpen(!ok);
+      setIsProcessing(false);
+    })();
+  }, [amount, isProcessing, period.id, dispatch]);
 
   return (
     <Modal
       approveColor="primary"
-      approveDisabled={!isAmountValid || isProcessing}
+      approveDisabled={!amount || !isAmountValid || isProcessing}
       approveText="Process Payment"
       dismissText="Cancel"
       title="Additional Payment"
@@ -94,23 +87,19 @@ const PaymentModalAdditional = ({ period, removeModal }) => {
         <>
           <div className={styles.description}>
             Additional payment for Resource Booking &quot;{period.userHandle}
-            &quot; for week &quot;{moment(period.start).format("MM/DD")}
+            &quot; for the week &quot;{moment(period.start).format("MM/DD")}
             &nbsp;-&nbsp;{moment(period.end).format("MM/DD")}&quot;
           </div>
           <form className={styles.form} action="#" onSubmit={preventDefault}>
-            <TextField
+            <CurrencyField
               className={styles.amountField}
-              isValid={isAmountValid}
+              error={isAmountValid ? null : ERROR_MESSAGE.AMOUNT_OUT_OF_BOUNDS}
+              isTouched={true}
               label="Amount ($)"
               name={`payment_amount_${period.id}`}
+              onChange={setAmount}
               value={amount}
-              onChange={onChangeAmount}
             />
-            {!isAmountValid && (
-              <ValidationError className={styles.amountError}>
-                Amount should be greater than 0 and less than 100,000.
-              </ValidationError>
-            )}
           </form>
         </>
       )}

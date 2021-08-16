@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import PT from "prop-types";
 import debounce from "lodash/debounce";
 import Modal from "components/Modal";
 import Spinner from "components/Spinner";
-import TextField from "components/TextField";
-import ValidationError from "components/ValidationError";
-import { makeToast } from "components/ToastrMessage";
-import { patchWorkPeriodPayment } from "services/workPeriods";
+import CurrencyField from "components/CurrencyField";
+import { updateWorkPeriodPayment } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
 import { preventDefault, validateAmount } from "utils/misc";
+import { ERROR_MESSAGE } from "constants/workPeriods";
 import styles from "./styles.module.scss";
 
 /**
@@ -18,12 +18,16 @@ import styles from "./styles.module.scss";
  * @returns {JSX.Element}
  */
 const PaymentModalEditAdditional = ({ payment, removeModal }) => {
+  const paymentAmount = payment.amount + "";
   const [isModalOpen, setIsModalOpen] = useState(true);
-  const [amount, setAmount] = useState(payment.amount);
+  const [amount, setAmount] = useState(paymentAmount);
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const dispatch = useDispatch();
 
-  const amountControlId = `edit_pmt_amt_${payment.id}`;
+  const isChanged = amount !== paymentAmount;
+  const { id: paymentId, workPeriodId: periodId } = payment;
+  const amountControlId = `edit_pmt_amt_${paymentId}`;
 
   const onApprove = () => {
     let isAmountValid = validateAmount(amount);
@@ -37,8 +41,8 @@ const PaymentModalEditAdditional = ({ payment, removeModal }) => {
     setIsModalOpen(false);
   }, []);
 
-  const onAmountChange = useCallback((amount) => {
-    setAmount((amount || "").trim());
+  const onChangeAmount = useCallback((amount) => {
+    setAmount(amount);
   }, []);
 
   const validateAmountDebounced = useCallback(
@@ -61,26 +65,23 @@ const PaymentModalEditAdditional = ({ payment, removeModal }) => {
     if (!isProcessing) {
       return;
     }
-    patchWorkPeriodPayment(payment.id, { amount })
-      .then(() => {
-        makeToast("Payment was successfully updated", "success");
-        setIsModalOpen(false);
-      })
-      .catch((error) => {
-        makeToast(error.toString());
-      })
-      .finally(() => {
-        setIsProcessing(false);
-      });
-  }, [amount, isProcessing, payment.id]);
+    (async function () {
+      let ok = await dispatch(
+        updateWorkPeriodPayment(periodId, paymentId, { amount })
+      );
+      setIsModalOpen(!ok);
+      setIsProcessing(false);
+    })();
+  }, [amount, isProcessing, paymentId, periodId, dispatch]);
 
   return (
     <Modal
       approveColor="primary"
-      approveDisabled={!isAmountValid || isProcessing}
+      approveDisabled={!isChanged || !isAmountValid || isProcessing}
       approveText="Update"
       title="Edit Additional Payment"
       controls={isProcessing ? null : undefined}
+      isDisabled={isProcessing}
       isOpen={isModalOpen}
       onApprove={onApprove}
       onClose={removeModal}
@@ -96,18 +97,16 @@ const PaymentModalEditAdditional = ({ payment, removeModal }) => {
                 <label htmlFor={amountControlId}>Amount:</label>
               </div>
               <div className={styles.fieldControl}>
-                <TextField
+                <CurrencyField
+                  error={
+                    isAmountValid ? null : ERROR_MESSAGE.AMOUNT_OUT_OF_BOUNDS
+                  }
                   id={amountControlId}
-                  isValid={isAmountValid}
+                  isTouched={isChanged}
                   name="edit_payment_amount"
-                  onChange={onAmountChange}
+                  onChange={onChangeAmount}
                   value={amount}
                 />
-                {!isAmountValid && (
-                  <ValidationError>
-                    Amount should be greater than 0 and less than 100,000.
-                  </ValidationError>
-                )}
               </div>
             </div>
           </form>
@@ -124,6 +123,7 @@ PaymentModalEditAdditional.propTypes = {
   payment: PT.shape({
     amount: PT.number.isRequired,
     id: PT.string.isRequired,
+    workPeriodId: PT.string.isRequired,
   }).isRequired,
   removeModal: PT.func.isRequired,
 };

@@ -133,12 +133,8 @@ const actionHandlers = {
     const dateRange = state.filters.dateRange;
     const periodStart = dateRange[0];
     const periodEnd = dateRange[1];
-    const periodStartValue = periodStart.valueOf();
-    const periodEndValue = periodEnd.valueOf();
     for (let period of periods) {
       periodsById[period.id] = true;
-      period.start = periodStartValue;
-      period.end = periodEndValue;
       let periodData = initPeriodData(period);
       let daysWorkedMax = computeDaysWorkedMax(
         period.bookingStart,

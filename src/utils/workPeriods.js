@@ -168,6 +168,8 @@ export function normalizePeriodItems(items) {
       bookingEnd: item.endDate
         ? moment(item.endDate).format(DATE_FORMAT_ISO)
         : "",
+      start: workPeriod.startDate,
+      end: workPeriod.endDate,
       weeklyRate: item.memberRate,
       data: normalizePeriodData(workPeriod),
     });

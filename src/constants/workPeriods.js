@@ -4,6 +4,7 @@ import * as ALERT from "./workPeriods/alerts";
 import * as API_CHALLENGE_PAYMENT_STATUS from "./workPeriods/apiChallengePaymentStatus";
 import * as API_PAYMENT_STATUS from "./workPeriods/apiPaymentStatus";
 import * as API_SORT_BY from "./workPeriods/apiSortBy";
+import * as ERROR_MESSAGE from "./workPeriods/errorMessage";
 import * as SORT_BY from "./workPeriods/sortBy";
 import * as SORT_ORDER from "./workPeriods/sortOrder";
 import * as PAYMENT_STATUS from "./workPeriods/paymentStatus";
@@ -14,6 +15,7 @@ export {
   API_CHALLENGE_PAYMENT_STATUS,
   API_PAYMENT_STATUS,
   API_SORT_BY,
+  ERROR_MESSAGE,
   SORT_BY,
   SORT_ORDER,
   PAYMENT_STATUS,

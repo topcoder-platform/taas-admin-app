@@ -15,7 +15,6 @@ import styles from "./styles.module.scss";
  */
 const Page = ({ className, children }) => (
   <div className={cn(styles.container, className)}>
-    {children}
     <ReduxToastr
       timeOut={TOAST_DEFAULT_TIMEOUT}
       position="top-right"
@@ -26,6 +25,7 @@ const Page = ({ className, children }) => (
       transitionIn="fadeIn"
       transitionOut="fadeOut"
     />
+    {children}
   </div>
 );
 

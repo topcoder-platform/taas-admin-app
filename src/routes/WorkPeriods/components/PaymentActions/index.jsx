@@ -34,7 +34,10 @@ const PaymentActions = ({ className, daysPaid, daysWorked, payment }) => {
         action() {
           setIsOpenEditModal(true);
         },
-        disabled: paymentStatus === PAYMENT_STATUS.IN_PROGRESS,
+        disabled:
+          paymentStatus === PAYMENT_STATUS.IN_PROGRESS ||
+          paymentStatus === PAYMENT_STATUS.FAILED ||
+          paymentStatus === PAYMENT_STATUS.CANCELLED,
       },
       {
         label: "Cancel Payment",

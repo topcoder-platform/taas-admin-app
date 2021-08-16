@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import PT from "prop-types";
 import cn from "classnames";
+import ValidationError from "components/ValidationError";
 import styles from "./styles.module.scss";
 
 /**
@@ -11,9 +12,12 @@ import styles from "./styles.module.scss";
  */
 const TextField = ({
   className,
+  error,
+  errorClassName,
   id,
+  inputRef,
   isDisabled = false,
-  isValid = true,
+  isTouched = false,
   label,
   name,
   onBlur,
@@ -39,7 +43,7 @@ const TextField = ({
         {
           [styles.hasLabel]: !!label,
           [styles.disabled]: isDisabled,
-          [styles.invalid]: !isValid,
+          [styles.invalid]: !!error,
         },
         className
       )}
@@ -50,21 +54,30 @@ const TextField = ({
         disabled={isDisabled}
         id={id}
         name={name}
-        type="text"
-        value={value}
         onBlur={onBlur}
         onChange={onInputChange}
         onFocus={onFocus}
+        ref={inputRef}
+        type="text"
+        value={value}
       />
+      {isTouched && error && (
+        <ValidationError className={cn(styles.error, errorClassName)}>
+          {error}
+        </ValidationError>
+      )}
     </div>
   );
 };
 
 TextField.propTypes = {
   className: PT.string,
+  error: PT.string,
+  errorClassName: PT.string,
   id: PT.string,
+  inputRef: PT.oneOfType([PT.object, PT.func]),
   isDisabled: PT.bool,
-  isValid: PT.bool,
+  isTouched: PT.bool,
   label: PT.string,
   name: PT.string.isRequired,
   onBlur: PT.func,
