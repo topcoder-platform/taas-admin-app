@@ -1,4 +1,4 @@
-declare module "@topcoder/micro-frontends-navbar-app" {
+declare module "@topcoder/mfe-header" {
   export const disableSidebarForRoute: (route: string) => void;
   export const getAuthUserProfile: () => Promise<any>;
   export const getAuthUserTokens: () => Promise<{

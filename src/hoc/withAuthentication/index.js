@@ -13,7 +13,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import _ from "lodash";
 import { decodeToken } from "tc-auth-lib";
-import { getAuthUserTokens, login } from "@topcoder/micro-frontends-navbar-app";
+import { getAuthUserTokens, login } from "@topcoder/mfe-header";
 import LoadingIndicator from "components/LoadingIndicator";
 import { authUserSuccess, authUserError } from "./actions";
 

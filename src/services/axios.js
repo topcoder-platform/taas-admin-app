@@ -1,6 +1,6 @@
 import axios from "axios";
 import get from "lodash/get";
-import { getAuthUserTokens } from "@topcoder/micro-frontends-navbar-app";
+import { getAuthUserTokens } from "@topcoder/mfe-header";
 
 export const CancelToken = axios.CancelToken;
 

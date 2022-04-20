@@ -6,7 +6,7 @@ import {
   disableSidebarForRoute,
   setNotificationPlatform,
   PLATFORM,
-} from "@topcoder/micro-frontends-navbar-app";
+} from "@topcoder/mfe-header";
 import WorkPeriods from "routes/WorkPeriods";
 import Freelancers from "routes/Freelancers";
 import Roles from "routes/Roles";
