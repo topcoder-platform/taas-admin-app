@@ -6,6 +6,7 @@ import PageTitle from "components/PageTitle";
 import {
   getWorkPeriodsHasSelectedItems,
   getWorkPeriodsIsProcessingPayments,
+  getWorkPeriodsIsSelectedAll,
 } from "store/selectors/workPeriods";
 import { processPayments } from "store/thunks/workPeriods";
 import styles from "./styles.module.scss";
@@ -13,6 +14,7 @@ import styles from "./styles.module.scss";
 const PeriodsContentHeader = () => {
   const hasSelectedItems = useSelector(getWorkPeriodsHasSelectedItems);
   const isProcessingPayments = useSelector(getWorkPeriodsIsProcessingPayments);
+  const isSelectedAll = useSelector(getWorkPeriodsIsSelectedAll);
   const dispatch = useDispatch();
 
   const onProcessPaymentsClick = useCallback(() => {
@@ -25,7 +27,9 @@ const PeriodsContentHeader = () => {
       <Button
         className={styles.button}
         variant="contained"
-        isDisabled={!hasSelectedItems || isProcessingPayments}
+        isDisabled={
+          isProcessingPayments || !(hasSelectedItems || isSelectedAll)
+        }
         onClick={onProcessPaymentsClick}
       >
         Process Payment
